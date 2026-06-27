@@ -1,5 +1,10 @@
+import json
 import os
 import secrets
+import time
+import hmac
+import hashlib
+import base64
 from functools import wraps
 from typing import Any
 
@@ -7,21 +12,70 @@ import certifi
 import pymongo
 import requests
 from dotenv import load_dotenv
-from flask import Flask, jsonify, redirect, render_template, request, session, url_for
+from flask import Flask, jsonify, redirect, render_template, request, url_for
 
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "klaus-dashboard-secret-key-2026")
-app.config["SESSION_COOKIE_NAME"] = "klaus_session"
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-app.config["SESSION_COOKIE_SECURE"] = True
+SECRET = os.getenv("SECRET_KEY", "klaus-dashboard-secret-2026")
 
 CLIENT_ID = os.getenv("CLIENT_ID", "")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET", "")
 BOT_TOKEN = os.getenv("BOT_TOKEN", "")
 MONGODB_URL = os.getenv("MONGODB_URL", "")
 API = "https://discord.com/api/v10"
+
+
+def sign_data(data: str) -> str:
+    sig = hmac.new(SECRET.encode(), data.encode(), hashlib.sha256).hexdigest()
+    return base64.urlsafe_b64encode(data.encode()).decode() + "." + sig
+
+
+def unsign_data(signed: str) -> str | None:
+    try:
+        parts = signed.split(".", 1)
+        data_b64 = parts[0]
+        sig = parts[1]
+        data = base64.urlsafe_b64decode(data_b64.encode()).decode()
+        expected = hmac.new(SECRET.encode(), data.encode(), hashlib.sha256).hexdigest()
+        if hmac.compare_digest(sig, expected):
+            return data
+    except Exception:
+        pass
+    return None
+
+
+def set_user_cookie(resp: Any, user: dict) -> Any:
+    payload = json.dumps(user)
+    signed = sign_data(payload)
+    max_age = 60 * 60 * 24 * 7
+    resp.set_cookie("user", signed, max_age=max_age, httponly=True, samesite="Lax", secure=False)
+    return resp
+
+
+def get_user() -> dict | None:
+    signed = request.cookies.get("user")
+    if not signed:
+        return None
+    data = unsign_data(signed)
+    if not data:
+        return None
+    try:
+        user = json.loads(data)
+        if time.time() - user.get("_ts", 0) > 60 * 60 * 24 * 7:
+            return None
+        return user
+    except Exception:
+        return None
+
+
+def login_required(f: Any) -> Any:
+    @wraps(f)
+    def decorated(*args: Any, **kwargs: Any) -> Any:
+        if not get_user():
+            return redirect(url_for("index"))
+        return f(*args, **kwargs)
+    return decorated
 
 
 def get_redirect_uri() -> str:
@@ -37,37 +91,35 @@ def get_db() -> Any:
     return client["economia"]
 
 
-def login_required(f: Any) -> Any:
-    @wraps(f)
-    def decorated(*args: Any, **kwargs: Any) -> Any:
-        if "user" not in session:
-            return redirect(url_for("index"))
-        return f(*args, **kwargs)
-    return decorated
-
-
 @app.route("/")
 def index() -> str:
-    return render_template("index.html", user=session.get("user"))
+    user = get_user()
+    return render_template("index.html", user=user)
 
 
 @app.route("/login")
 def login() -> redirect:
     state = secrets.token_urlsafe(32)
-    session["state"] = state
     redirect_uri = get_redirect_uri()
-    return redirect(
+    resp = redirect(
         f"https://discord.com/api/oauth2/authorize"
         f"?client_id={CLIENT_ID}&redirect_uri={redirect_uri}"
         f"&response_type=code&scope=identify+guilds&state={state}"
     )
+    resp.set_cookie("oauth_state", state, max_age=300)
+    return resp
 
 
 @app.route("/callback")
 def callback() -> redirect:
     code = request.args.get("code")
     state = request.args.get("state")
-    if not code or state != session.get("state"):
+    saved_state = request.cookies.get("oauth_state")
+
+    if not code:
+        return redirect(url_for("index"))
+
+    if state != saved_state:
         return redirect(url_for("index"))
 
     r = requests.post(
@@ -79,35 +131,49 @@ def callback() -> redirect:
         },
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         auth=(CLIENT_ID, CLIENT_SECRET),
+        timeout=10,
     )
     if r.status_code != 200:
         return redirect(url_for("index"))
 
     token = r.json()["access_token"]
-    user = requests.get(f"{API}/users/@me", headers={"Authorization": f"Bearer {token}"}).json()
-    guilds = requests.get(f"{API}/users/@me/guilds", headers={"Authorization": f"Bearer {token}"}).json()
+    user_resp = requests.get(f"{API}/users/@me", headers={"Authorization": f"Bearer {token}"}, timeout=10)
+    guilds_resp = requests.get(f"{API}/users/@me/guilds", headers={"Authorization": f"Bearer {token}"}, timeout=10)
 
-    user["guilds"] = guilds
-    session["user"] = user
-    return redirect(url_for("dashboard"))
+    if user_resp.status_code != 200:
+        return redirect(url_for("index"))
+
+    user = user_resp.json()
+    user["guilds"] = guilds_resp.json() if guilds_resp.status_code == 200 else []
+    user["_ts"] = int(time.time())
+
+    resp = redirect(url_for("dashboard"))
+    set_user_cookie(resp, user)
+    resp.delete_cookie("oauth_state")
+    return resp
 
 
 @app.route("/logout")
 def logout() -> redirect:
-    session.clear()
-    return redirect(url_for("index"))
+    resp = redirect(url_for("index"))
+    resp.delete_cookie("user")
+    return resp
 
 
 @app.route("/dashboard")
 @login_required
 def dashboard() -> str:
-    user = session["user"]
+    user = get_user()
+    assert user is not None
 
     bot_guilds = set()
     if BOT_TOKEN:
-        r = requests.get(f"{API}/users/@me/guilds", headers={"Authorization": f"Bot {BOT_TOKEN}"})
-        if r.status_code == 200:
-            bot_guilds = {g["id"] for g in r.json()}
+        try:
+            r = requests.get(f"{API}/users/@me/guilds", headers={"Authorization": f"Bot {BOT_TOKEN}"}, timeout=10)
+            if r.status_code == 200:
+                bot_guilds = {g["id"] for g in r.json()}
+        except Exception:
+            pass
 
     guilds = []
     for g in user.get("guilds", []):
@@ -123,7 +189,8 @@ def dashboard() -> str:
 @app.route("/server/<guild_id>")
 @login_required
 def server(guild_id: str) -> str:
-    user = session["user"]
+    user = get_user()
+    assert user is not None
     guild = next((g for g in user.get("guilds", []) if g["id"] == guild_id), None)
     if not guild:
         return redirect(url_for("dashboard"))
@@ -174,12 +241,15 @@ def save_config(guild_id: str) -> Any:
 def get_roles(guild_id: str) -> Any:
     if not BOT_TOKEN:
         return jsonify([])
-    r = requests.get(f"{API}/guilds/{guild_id}/roles", headers={"Authorization": f"Bot {BOT_TOKEN}"})
-    if r.status_code != 200:
+    try:
+        r = requests.get(f"{API}/guilds/{guild_id}/roles", headers={"Authorization": f"Bot {BOT_TOKEN}"}, timeout=10)
+        if r.status_code != 200:
+            return jsonify([])
+        roles = [x for x in r.json() if not x.get("managed") and x["name"] != "@everyone"]
+        roles.sort(key=lambda x: x.get("position", 0), reverse=True)
+        return jsonify([{"id": r["id"], "name": r["name"]} for r in roles])
+    except Exception:
         return jsonify([])
-    roles = [x for x in r.json() if not x.get("managed") and x["name"] != "@everyone"]
-    roles.sort(key=lambda x: x.get("position", 0), reverse=True)
-    return jsonify([{"id": r["id"], "name": r["name"]} for r in roles])
 
 
 @app.route("/api/<guild_id>/channels")
@@ -187,12 +257,15 @@ def get_roles(guild_id: str) -> Any:
 def get_channels(guild_id: str) -> Any:
     if not BOT_TOKEN:
         return jsonify([])
-    r = requests.get(f"{API}/guilds/{guild_id}/channels", headers={"Authorization": f"Bot {BOT_TOKEN}"})
-    if r.status_code != 200:
+    try:
+        r = requests.get(f"{API}/guilds/{guild_id}/channels", headers={"Authorization": f"Bot {BOT_TOKEN}"}, timeout=10)
+        if r.status_code != 200:
+            return jsonify([])
+        channels = [c for c in r.json() if c.get("type") == 0]
+        channels.sort(key=lambda x: x.get("position", 0))
+        return jsonify([{"id": c["id"], "name": c["name"]} for c in channels])
+    except Exception:
         return jsonify([])
-    channels = [c for c in r.json() if c.get("type") == 0]
-    channels.sort(key=lambda x: x.get("position", 0))
-    return jsonify([{"id": c["id"], "name": c["name"]} for c in channels])
 
 
 if __name__ == "__main__":

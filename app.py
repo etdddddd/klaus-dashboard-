@@ -12,7 +12,10 @@ from flask import Flask, jsonify, redirect, render_template, request, session, u
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", secrets.token_hex(32))
+app.secret_key = os.getenv("SECRET_KEY", "klaus-dashboard-secret-key-2026")
+app.config["SESSION_COOKIE_NAME"] = "klaus_session"
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = True
 
 CLIENT_ID = os.getenv("CLIENT_ID", "")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET", "")

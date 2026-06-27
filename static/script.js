@@ -12,7 +12,7 @@ function init(id) {
           if (sel.id === 'autorole_role') return;
           const opt = document.createElement('option');
           opt.value = '';
-          opt.textContent = 'Nenhum canal encontrado';
+          opt.textContent = 'Adicione BOT_TOKEN no Vercel para ver canais';
           opt.disabled = true;
           sel.appendChild(opt);
         });
@@ -43,7 +43,7 @@ function init(id) {
       if (!roles || roles.length === 0) {
         const opt = document.createElement('option');
         opt.value = '';
-        opt.textContent = 'Nenhum cargo encontrado';
+        opt.textContent = 'Adicione BOT_TOKEN no Vercel para ver cargos';
         opt.disabled = true;
         el.appendChild(opt);
         return;

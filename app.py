@@ -74,7 +74,7 @@ def login() -> redirect:
         f"?client_id={CLIENT_ID}"
         f"&redirect_uri={get_redirect_uri()}"
         f"&response_type=code"
-        f"&scope=identify+guilds+guilds.channels.read+guilds.members.read"
+        f"&scope=identify+guilds"
     )
 
 

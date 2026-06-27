@@ -186,10 +186,12 @@ def api_save(guild_id: str) -> Any:
 
 @app.route("/api/<guild_id>/roles")
 def api_roles(guild_id: str) -> Any:
-    if not BOT_TOKEN:
+    user_token = request.cookies.get("token")
+    auth = f"Bot {BOT_TOKEN}" if BOT_TOKEN else f"Bearer {user_token}" if user_token else ""
+    if not auth:
         return jsonify([])
     try:
-        r = requests.get(f"{API}/guilds/{guild_id}/roles", headers={"Authorization": f"Bot {BOT_TOKEN}"}, timeout=10)
+        r = requests.get(f"{API}/guilds/{guild_id}/roles", headers={"Authorization": auth}, timeout=10)
         if r.status_code != 200:
             return jsonify([])
         roles = [x for x in r.json() if not x.get("managed") and x["name"] != "@everyone"]
@@ -201,10 +203,12 @@ def api_roles(guild_id: str) -> Any:
 
 @app.route("/api/<guild_id>/channels")
 def api_channels(guild_id: str) -> Any:
-    if not BOT_TOKEN:
+    user_token = request.cookies.get("token")
+    auth = f"Bot {BOT_TOKEN}" if BOT_TOKEN else f"Bearer {user_token}" if user_token else ""
+    if not auth:
         return jsonify([])
     try:
-        r = requests.get(f"{API}/guilds/{guild_id}/channels", headers={"Authorization": f"Bot {BOT_TOKEN}"}, timeout=10)
+        r = requests.get(f"{API}/guilds/{guild_id}/channels", headers={"Authorization": auth}, timeout=10)
         if r.status_code != 200:
             return jsonify([])
         channels = [c for c in r.json() if c.get("type") == 0]

@@ -2,57 +2,54 @@ let GUILD = '';
 
 function init(id) {
   GUILD = id;
-  fetch(`/api/${id}/channels`).then(r => r.json()).then(channels => {
-    ['welcome_channel', 'logs_channel', 'farewell_channel'].forEach(sel => {
-      const el = document.getElementById(sel);
+
+  fetch(`/api/${id}/channels`)
+    .then(r => r.json())
+    .then(channels => {
+      document.querySelectorAll('select').forEach(sel => {
+        if (sel.id === 'autorole_role') return;
+        const cfg = window.__config || {};
+        channels.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = '#' + c.name;
+          sel.appendChild(opt);
+        });
+      });
+      if (cfg.welcome_channel) document.getElementById('welcome_channel').value = cfg.welcome_channel;
+      if (cfg.logs_channel) document.getElementById('logs_channel').value = cfg.logs_channel;
+      if (cfg.farewell_channel) document.getElementById('farewell_channel').value = cfg.farewell_channel;
+    })
+    .catch(() => console.log('Erro ao carregar canais'));
+
+  fetch(`/api/${id}/roles`)
+    .then(r => r.json())
+    .then(roles => {
+      const el = document.getElementById('autorole_role');
       if (!el) return;
-      const val = el.closest('.tab-content')?.querySelector('input[type="checkbox"]')?.id;
-      channels.forEach(c => {
+      roles.forEach(r => {
         const opt = document.createElement('option');
-        opt.value = c.id;
-        opt.textContent = '#' + c.name;
+        opt.value = r.id;
+        opt.textContent = r.name;
         el.appendChild(opt);
       });
-    });
-    loadSaved(channels);
-  });
-
-  fetch(`/api/${id}/roles`).then(r => r.json()).then(roles => {
-    const el = document.getElementById('autorole_role');
-    if (!el) return;
-    roles.forEach(r => {
-      const opt = document.createElement('option');
-      opt.value = r.id;
-      opt.textContent = r.name;
-      el.appendChild(opt);
-    });
-    loadSavedRoles();
-  });
+      const cfg = window.__config || {};
+      if (cfg.autorole_role) el.value = cfg.autorole_role;
+    })
+    .catch(() => console.log('Erro ao carregar cargos'));
 
   setupPreview();
 }
 
-function loadSaved(channels) {
-  const cfg = window.__config || {};
-  if (cfg.welcome_channel) document.getElementById('welcome_channel').value = cfg.welcome_channel;
-  if (cfg.logs_channel) document.getElementById('logs_channel').value = cfg.logs_channel;
-  if (cfg.farewell_channel) document.getElementById('farewell_channel').value = cfg.farewell_channel;
-}
-
-function loadSavedRoles() {
-  const cfg = window.__config || {};
-  if (cfg.autorole_role) document.getElementById('autorole_role').value = cfg.autorole_role;
-}
-
-function tab(name) {
+function tab(name, btn) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+  btn.classList.add('active');
   document.getElementById('tab-' + name).classList.add('active');
 }
 
 function save(section) {
-  const btn = event.target;
+  const btn = event.target.closest('button');
   btn.disabled = true;
   btn.textContent = 'Salvando...';
 
@@ -97,53 +94,49 @@ function save(section) {
     .then(r => r.json())
     .then(res => {
       if (res.ok) {
-        alert('Salvo com sucesso! ✨');
+        alert('Salvo com sucesso!');
       } else {
         alert('Erro: ' + (res.error || 'desconhecido'));
       }
     })
-    .catch(() => alert('Erro de conexão'))
+    .catch(() => alert('Erro de conexao'))
     .finally(() => {
       btn.disabled = false;
-      btn.textContent = 'Salvar 💾';
+      btn.textContent = 'Salvar';
     });
 }
 
 function setupPreview() {
-  const fields = {
+  const pairs = {
     'welcome_title': 'w-title',
     'welcome_message': 'w-desc',
-    'welcome_color': null,
     'farewell_title': 'f-title',
     'farewell_message': 'f-desc',
-    'farewell_color': null,
   };
 
-  Object.keys(fields).forEach(id => {
+  Object.keys(pairs).forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener('input', () => {
-      if (fields[id]) {
-        const target = document.getElementById(fields[id]);
-        if (target) target.textContent = el.value;
-      }
-      if (id.includes('color')) {
-        const prefix = id.split('_')[0];
-        const preview = document.getElementById(prefix + '-preview');
-        const pick = document.getElementById(id + '_pick');
-        if (preview) preview.style.borderLeftColor = el.value;
-        if (pick) pick.value = el.value;
-      }
+      const target = document.getElementById(pairs[id]);
+      if (target) target.textContent = el.value;
     });
   });
 
   ['welcome_color', 'farewell_color'].forEach(id => {
     const text = document.getElementById(id);
     const pick = document.getElementById(id + '_pick');
-    if (text && pick) {
-      pick.addEventListener('input', () => { text.value = pick.value; text.dispatchEvent(new Event('input')); });
-    }
+    if (!text || !pick) return;
+    text.addEventListener('input', () => { pick.value = text.value; updateColor(id); });
+    pick.addEventListener('input', () => { text.value = pick.value; updateColor(id); });
   });
+}
+
+function updateColor(id) {
+  const text = document.getElementById(id);
+  const prefix = id.split('_')[0];
+  const preview = document.getElementById(prefix + '-preview');
+  if (preview && text) preview.style.borderLeftColor = text.value;
 }
 
 window.__config = {{ config | tojson }};

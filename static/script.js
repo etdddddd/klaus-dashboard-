@@ -5,21 +5,19 @@ function init(id) {
 
   fetch(`/api/${id}/channels`)
     .then(r => r.json())
-    .then(channels => {
-      console.log('Channels response:', channels);
-      if (!channels || channels.length === 0) {
-        document.querySelectorAll('select').forEach(sel => {
-          if (sel.id === 'autorole_role') return;
-          const opt = document.createElement('option');
-          opt.value = '';
-          opt.textContent = 'Adicione BOT_TOKEN no Vercel para ver canais';
-          opt.disabled = true;
-          sel.appendChild(opt);
-        });
-        return;
-      }
+    .then(data => {
+      console.log('Channels response:', data);
+      const channels = data.channels || data;
       document.querySelectorAll('select').forEach(sel => {
         if (sel.id === 'autorole_role') return;
+        if (!channels || channels.length === 0) {
+          const opt = document.createElement('option');
+          opt.value = '';
+          opt.textContent = data.error ? `Erro: ${data.error}` : 'Nenhum canal encontrado';
+          opt.disabled = true;
+          sel.appendChild(opt);
+          return;
+        }
         channels.forEach(c => {
           const opt = document.createElement('option');
           opt.value = c.id;
@@ -32,18 +30,19 @@ function init(id) {
       if (cfg.logs_channel) document.getElementById('logs_channel').value = cfg.logs_channel;
       if (cfg.farewell_channel) document.getElementById('farewell_channel').value = cfg.farewell_channel;
     })
-    .catch(() => console.log('Erro ao carregar canais'));
+    .catch(e => console.log('Erro ao carregar canais:', e));
 
   fetch(`/api/${id}/roles`)
     .then(r => r.json())
-    .then(roles => {
-      console.log('Roles response:', roles);
+    .then(data => {
+      console.log('Roles response:', data);
+      const roles = data.roles || data;
       const el = document.getElementById('autorole_role');
       if (!el) return;
       if (!roles || roles.length === 0) {
         const opt = document.createElement('option');
         opt.value = '';
-        opt.textContent = 'Adicione BOT_TOKEN no Vercel para ver cargos';
+        opt.textContent = data.error ? `Erro: ${data.error}` : 'Nenhum cargo encontrado';
         opt.disabled = true;
         el.appendChild(opt);
         return;
@@ -57,7 +56,7 @@ function init(id) {
       const cfg = window.__config || {};
       if (cfg.autorole_role) el.value = cfg.autorole_role;
     })
-    .catch(() => console.log('Erro ao carregar cargos'));
+    .catch(e => console.log('Erro ao carregar cargos:', e));
 
   setupPreview();
 }

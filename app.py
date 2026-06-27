@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 CLIENT_ID = os.getenv("CLIENT_ID", "")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET", "")
-BOT_TOKEN = os.getenv("BOT_TOKEN", "")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
 MONGODB_URL = os.getenv("MONGODB_URL", "")
 API = "https://discord.com/api/v10"
 
@@ -189,19 +189,16 @@ def api_roles(guild_id: str) -> Any:
     user_token = request.cookies.get("token")
     auth = f"Bot {BOT_TOKEN}" if BOT_TOKEN else f"Bearer {user_token}" if user_token else ""
     if not auth:
-        return jsonify([])
+        return jsonify({"error": "no token", "roles": []})
     try:
         r = requests.get(f"{API}/guilds/{guild_id}/roles", headers={"Authorization": auth}, timeout=10)
-        print(f"[API] Roles {guild_id}: status={r.status_code} auth={'Bot' if BOT_TOKEN else 'User'}")
         if r.status_code != 200:
-            print(f"[API] Roles error: {r.text[:200]}")
-            return jsonify([])
+            return jsonify({"error": r.json().get("message", str(r.status_code)), "roles": []})
         roles = [x for x in r.json() if not x.get("managed") and x["name"] != "@everyone"]
         roles.sort(key=lambda x: x.get("position", 0), reverse=True)
-        return jsonify([{"id": r["id"], "name": r["name"]} for r in roles])
+        return jsonify({"roles": [{"id": r["id"], "name": r["name"]} for r in roles]})
     except Exception as e:
-        print(f"[API] Roles exception: {e}")
-        return jsonify([])
+        return jsonify({"error": str(e), "roles": []})
 
 
 @app.route("/api/<guild_id>/channels")
@@ -209,19 +206,16 @@ def api_channels(guild_id: str) -> Any:
     user_token = request.cookies.get("token")
     auth = f"Bot {BOT_TOKEN}" if BOT_TOKEN else f"Bearer {user_token}" if user_token else ""
     if not auth:
-        return jsonify([])
+        return jsonify({"error": "no token", "channels": []})
     try:
         r = requests.get(f"{API}/guilds/{guild_id}/channels", headers={"Authorization": auth}, timeout=10)
-        print(f"[API] Channels {guild_id}: status={r.status_code} auth={'Bot' if BOT_TOKEN else 'User'}")
         if r.status_code != 200:
-            print(f"[API] Channels error: {r.text[:200]}")
-            return jsonify([])
+            return jsonify({"error": r.json().get("message", str(r.status_code)), "channels": []})
         channels = [c for c in r.json() if c.get("type") == 0]
         channels.sort(key=lambda x: x.get("position", 0))
-        return jsonify([{"id": c["id"], "name": c["name"]} for c in channels])
+        return jsonify({"channels": [{"id": c["id"], "name": c["name"]} for c in channels]})
     except Exception as e:
-        print(f"[API] Channels exception: {e}")
-        return jsonify([])
+        return jsonify({"error": str(e), "channels": []})
 
 
 if __name__ == "__main__":

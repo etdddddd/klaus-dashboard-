@@ -24,119 +24,277 @@
   </nav>
 
   <div class="container">
-    <div class="section-header" style="margin-bottom: 2rem;">
-      <span class="section-badge" id="status-badge">Verificando...</span>
-      <h2>Status do Bot</h2>
-      <p>Informações em tempo real do Klaus</p>
+
+    <div class="status-hero">
+      <div class="status-hero-icon" id="hero-icon">
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring delay"></div>
+        <span id="hero-emoji">⏳</span>
+      </div>
+      <h1 id="hero-title" class="status-hero-title">Verificando...</h1>
+      <p id="hero-sub" class="status-hero-sub">Conectando ao servidor</p>
     </div>
 
-    <div class="grid-2" style="margin-bottom: 2rem;">
-      <div class="card" style="text-align: center; padding: 2rem;">
-        <div style="font-size: 3rem; margin-bottom: 0.5rem;" id="status-emoji">⏳</div>
-        <h3 id="status-text" style="margin-bottom: 0.3rem;">Verificando...</h3>
-        <p style="color: var(--text3); font-size: 0.85rem;" id="status-sub">Conectando ao servidor</p>
-      </div>
-      <div class="card" style="text-align: center; padding: 2rem;">
-        <div style="font-size: 3rem; margin-bottom: 0.5rem;">💜</div>
-        <h3 style="margin-bottom: 0.3rem;">Klaus Bot</h3>
-        <p style="color: var(--text3); font-size: 0.85rem;">Versão <span id="bot-version">2.0</span></p>
-      </div>
-    </div>
-
-    <div class="section-header" style="margin-bottom: 1.5rem;">
-      <h2 style="font-size: 1.5rem;">Estatísticas</h2>
-    </div>
-
-    <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 2rem;">
-      <div class="feature-card visible" style="--accent: #8b5cf6; text-align: center;">
-        <div class="feature-icon" style="margin: 0 auto 1rem;">👥</div>
-        <h3 style="font-size: 2rem; font-weight: 900;" id="stat-users">--</h3>
-        <p style="margin: 0;">Usuários</p>
-      </div>
-      <div class="feature-card visible" style="--accent: #3b82f6; text-align: center;">
-        <div class="feature-icon" style="margin: 0 auto 1rem;">🏠</div>
-        <h3 style="font-size: 2rem; font-weight: 900;" id="stat-guilds">--</h3>
-        <p style="margin: 0;">Servidores</p>
-      </div>
-      <div class="feature-card visible" style="--accent: #f59e0b; text-align: center;">
-        <div class="feature-icon" style="margin: 0 auto 1rem;">💰</div>
-        <h3 style="font-size: 2rem; font-weight: 900;" id="stat-koins">--</h3>
-        <p style="margin: 0;">Koins Totais</p>
-      </div>
-      <div class="feature-card visible" style="--accent: #22c55e; text-align: center;">
-        <div class="feature-icon" style="margin: 0 auto 1rem;">⚡</div>
-        <h3 style="font-size: 2rem; font-weight: 900;" id="stat-commands">--</h3>
-        <p style="margin: 0;">Comandos Usados</p>
-      </div>
-      <div class="feature-card visible" style="--accent: #d946ef; text-align: center;">
-        <div class="feature-icon" style="margin: 0 auto 1rem;">🏆</div>
-        <h3 style="font-size: 2rem; font-weight: 900;" id="stat-achievements">--</h3>
-        <p style="margin: 0;">Conquistas</p>
-      </div>
-      <div class="feature-card visible" style="--accent: #ef4444; text-align: center;">
-        <div class="feature-icon" style="margin: 0 auto 1rem;">👑</div>
-        <h3 style="font-size: 1.2rem; font-weight: 900;" id="stat-top-user">--</h3>
-        <p style="margin: 0;">Mais Rico</p>
-      </div>
-    </div>
-
-    <div class="section-header" style="margin-bottom: 1.5rem;">
-      <h2 style="font-size: 1.5rem;">Serviços</h2>
-    </div>
-
-    <div class="card" style="margin-bottom: 2rem;">
-      <div class="service-row">
-        <div class="service-info">
-          <span class="service-dot service-online"></span>
-          <div>
-            <h4>Bot Discord</h4>
-            <p style="color: var(--text3); font-size: 0.8rem;">Klaus Bot —slash commands</p>
-          </div>
+    <div class="status-top-user card" id="top-user-card" style="display: none;">
+      <div class="top-user-inner">
+        <img id="top-avatar" src="" alt="" class="top-user-avatar">
+        <div class="top-user-info">
+          <span class="top-user-label">👑 Mais Rico</span>
+          <h3 id="top-user-name">--</h3>
+          <p id="top-user-koins" class="top-user-koins">0 Koins</p>
         </div>
-        <span class="badge badge-green">Operacional</span>
-      </div>
-      <div class="service-row">
-        <div class="service-info">
-          <span class="service-dot service-online"></span>
-          <div>
-            <h4>Dashboard</h4>
-            <p style="color: var(--text3); font-size: 0.8rem;">Painel de configuração web</p>
-          </div>
+        <div class="top-user-badge">
+          <span class="badge badge-gold">Rank #1</span>
         </div>
-        <span class="badge badge-green">Operacional</span>
-      </div>
-      <div class="service-row">
-        <div class="service-info">
-          <span class="service-dot service-online"></span>
-          <div>
-            <h4>API / MongoDB</h4>
-            <p style="color: var(--text3); font-size: 0.8rem;">Banco de dados e endpoints</p>
-          </div>
-        </div>
-        <span class="badge badge-green">Operacional</span>
-      </div>
-      <div class="service-row">
-        <div class="service-info">
-          <span class="service-dot service-online"></span>
-          <div>
-            <h4>Economia</h4>
-            <p style="color: var(--text3); font-size: 0.8rem;">Sistema financeiro e cassino</p>
-          </div>
-        </div>
-        <span class="badge badge-green">Operacional</span>
       </div>
     </div>
+
+    <div class="status-grid">
+      <div class="stat-card" style="--accent: #8b5cf6;">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value" id="stat-users">--</div>
+        <div class="stat-label">Usuários</div>
+        <div class="stat-bar"><div class="stat-bar-fill" id="bar-users"></div></div>
+      </div>
+      <div class="stat-card" style="--accent: #3b82f6;">
+        <div class="stat-icon">🏠</div>
+        <div class="stat-value" id="stat-guilds">--</div>
+        <div class="stat-label">Servidores</div>
+        <div class="stat-bar"><div class="stat-bar-fill" id="bar-guilds"></div></div>
+      </div>
+      <div class="stat-card" style="--accent: #f59e0b;">
+        <div class="stat-icon">💰</div>
+        <div class="stat-value" id="stat-koins">--</div>
+        <div class="stat-label">Koins Totais</div>
+        <div class="stat-bar"><div class="stat-bar-fill" id="bar-koins"></div></div>
+      </div>
+      <div class="stat-card" style="--accent: #22c55e;">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-value" id="stat-commands">--</div>
+        <div class="stat-label">Comandos Usados</div>
+        <div class="stat-bar"><div class="stat-bar-fill" id="bar-commands"></div></div>
+      </div>
+      <div class="stat-card" style="--accent: #d946ef;">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-value" id="stat-achievements">--</div>
+        <div class="stat-label">Conquistas</div>
+        <div class="stat-bar"><div class="stat-bar-fill" id="bar-achievements"></div></div>
+      </div>
+      <div class="stat-card" style="--accent: #06b6d4;">
+        <div class="stat-icon">🤖</div>
+        <div class="stat-value" id="stat-version">2.0</div>
+        <div class="stat-label">Versão</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width: 100%;"></div></div>
+      </div>
+    </div>
+
+    <div class="services-section">
+      <h2 class="section-title">Serviços</h2>
+      <div class="services-card card">
+        <div class="service-row">
+          <div class="service-info">
+            <span class="service-dot service-online"></span>
+            <div>
+              <h4>Bot Discord</h4>
+              <p>Slash commands &middot; Slash commands</p>
+            </div>
+          </div>
+          <span class="badge badge-green">Operacional</span>
+        </div>
+        <div class="service-row">
+          <div class="service-info">
+            <span class="service-dot service-online"></span>
+            <div>
+              <h4>Dashboard</h4>
+              <p>Painel de configuração web</p>
+            </div>
+          </div>
+          <span class="badge badge-green">Operacional</span>
+        </div>
+        <div class="service-row">
+          <div class="service-info">
+            <span class="service-dot service-online"></span>
+            <div>
+              <h4>API / MongoDB</h4>
+              <p>Banco de dados e endpoints</p>
+            </div>
+          </div>
+          <span class="badge badge-green">Operacional</span>
+        </div>
+        <div class="service-row">
+          <div class="service-info">
+            <span class="service-dot service-online"></span>
+            <div>
+              <h4>Economia</h4>
+              <p>Sistema financeiro e cassino</p>
+            </div>
+          </div>
+          <span class="badge badge-green">Operacional</span>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <style>
+    .status-hero {
+      text-align: center;
+      padding: 3rem 0 2rem;
+    }
+    .status-hero-icon {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pulse-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid var(--green);
+      animation: pulse-expand 2s ease-out infinite;
+      opacity: 0;
+    }
+    .pulse-ring.delay {
+      animation-delay: 0.8s;
+    }
+    @keyframes pulse-expand {
+      0% { transform: scale(0.8); opacity: 0.6; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+    #hero-emoji {
+      font-size: 3rem;
+      position: relative;
+      z-index: 2;
+    }
+    .status-hero-title {
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 0.3rem;
+    }
+    .status-hero-sub {
+      color: var(--text3);
+      font-size: 0.95rem;
+    }
+
+    .status-top-user {
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    .top-user-inner {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 1rem;
+    }
+    .top-user-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 3px solid #ffd700;
+      flex-shrink: 0;
+    }
+    .top-user-info { flex: 1; }
+    .top-user-label {
+      font-size: 0.75rem;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .top-user-info h3 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin: 0.1rem 0;
+    }
+    .top-user-koins {
+      color: #ffd700;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .stat-card {
+      background: rgba(15, 10, 26, 0.6);
+      border: 1px solid rgba(139, 92, 246, 0.12);
+      border-radius: 16px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+    .stat-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 900;
+      color: white;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.8rem;
+    }
+    .stat-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .stat-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 4px;
+      width: 0%;
+      transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .services-section { margin-bottom: 2rem; }
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+    .services-card { padding: 0; overflow: hidden; }
     .service-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1rem 0;
+      padding: 1rem 1.5rem;
       border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
     }
     .service-row:last-child { border-bottom: none; }
+    .service-row:hover { background: rgba(139, 92, 246, 0.04); }
     .service-info {
       display: flex;
       align-items: center;
@@ -157,51 +315,95 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.6; }
     }
+    .service-info h4 { font-size: 0.9rem; margin: 0; }
+    .service-info p { color: var(--text3); font-size: 0.78rem; margin: 0; }
+
+    .badge-gold {
+      background: rgba(255, 215, 0, 0.12);
+      color: #ffd700;
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      padding: 0.3rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
   </style>
 
   <script>
+    function formatKoins(n) {
+      if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+      return n.toLocaleString('pt-BR');
+    }
+
+    function animateValue(el, target) {
+      let current = 0;
+      const step = Math.ceil(target / 40);
+      const interval = setInterval(() => {
+        current += step;
+        if (current >= target) {
+          current = target;
+          clearInterval(interval);
+        }
+        el.textContent = current.toLocaleString('pt-BR');
+      }, 30);
+    }
+
     fetch('/api/bot_status').then(r => r.json()).then(data => {
-      const badge = document.getElementById('status-badge');
-      const emoji = document.getElementById('status-emoji');
-      const text = document.getElementById('status-text');
-      const sub = document.getElementById('status-sub');
+      const badge = document.querySelector('.nav-brand');
+      const heroEmoji = document.getElementById('hero-emoji');
+      const heroTitle = document.getElementById('hero-title');
+      const heroSub = document.getElementById('hero-sub');
+      const heroIcon = document.getElementById('hero-icon');
 
       if (data.status === 'online') {
-        badge.textContent = '● Online';
-        badge.style.background = 'rgba(34,197,94,0.1)';
-        badge.style.color = '#4ade80';
-        badge.style.borderColor = 'rgba(34,197,94,0.2)';
-        emoji.textContent = '✅';
-        text.textContent = 'Tudo Operacional';
-        sub.textContent = 'Todos os sistemas funcionando';
+        heroEmoji.textContent = '✅';
+        heroTitle.textContent = 'Tudo Operacional';
+        heroSub.textContent = 'Todos os sistemas funcionando normalmente';
+        heroTitle.style.color = '#4ade80';
       } else {
-        badge.textContent = '● Offline';
-        badge.style.background = 'rgba(239,68,68,0.1)';
-        badge.style.color = '#f87171';
-        badge.style.borderColor = 'rgba(239,68,68,0.2)';
-        emoji.textContent = '❌';
-        text.textContent = 'Offline';
-        sub.textContent = 'Verifique novamente em instantes';
+        heroEmoji.textContent = '❌';
+        heroTitle.textContent = 'Offline';
+        heroSub.textContent = 'Verifique novamente em instantes';
+        heroTitle.style.color = '#f87171';
+        heroIcon.querySelector('.pulse-ring').style.borderColor = '#ef4444';
+        heroIcon.querySelector('.pulse-ring.delay').style.borderColor = '#ef4444';
       }
 
-      document.getElementById('bot-version').textContent = data.bot_version || '2.0';
-      document.getElementById('stat-users').textContent = (data.total_users || 0).toLocaleString('pt-BR');
-      document.getElementById('stat-guilds').textContent = (data.total_guilds || 0).toLocaleString('pt-BR');
-      document.getElementById('stat-commands').textContent = (data.total_commands || 0).toLocaleString('pt-BR');
-      document.getElementById('stat-achievements').textContent = (data.total_achievements || 0).toLocaleString('pt-BR');
+      document.getElementById('stat-version').textContent = data.bot_version || '2.0';
 
-      let koins = data.total_koins || 0;
-      if (koins > 1000000) koins = (koins / 1000000).toFixed(1) + 'M';
-      else if (koins > 1000) koins = (koins / 1000).toFixed(1) + 'K';
-      document.getElementById('stat-koins').textContent = koins;
+      const users = data.total_users || 0;
+      const guilds = data.total_guilds || 0;
+      const koins = data.total_koins || 0;
+      const commands = data.total_commands || 0;
+      const achievements = data.total_achievements || 0;
 
-      document.getElementById('stat-top-user').textContent = `#${data.top_user_id} (${(data.top_user_koins || 0).toLocaleString('pt-BR')})`;
+      animateValue(document.getElementById('stat-users'), users);
+      animateValue(document.getElementById('stat-guilds'), guilds);
+      animateValue(document.getElementById('stat-commands'), commands);
+      animateValue(document.getElementById('stat-achievements'), achievements);
+      document.getElementById('stat-koins').textContent = formatKoins(koins);
 
-      document.querySelectorAll('.feature-card').forEach(c => c.classList.add('visible'));
+      setTimeout(() => {
+        document.getElementById('bar-users').style.width = Math.min(100, users / 5) + '%';
+        document.getElementById('bar-guilds').style.width = Math.min(100, guilds * 10) + '%';
+        document.getElementById('bar-koins').style.width = '85%';
+        document.getElementById('bar-commands').style.width = Math.min(100, commands / 100) + '%';
+        document.getElementById('bar-achievements').style.width = Math.min(100, achievements / 2) + '%';
+      }, 100);
+
+      if (data.top_user_id && data.top_user_id !== 'N/A') {
+        const card = document.getElementById('top-user-card');
+        card.style.display = 'block';
+        document.getElementById('top-avatar').src = `https://cdn.discordapp.com/embed/avatars/${parseInt(data.top_user_id) % 5}.png`;
+        document.getElementById('top-user-name').textContent = data.top_user_name || data.top_user_id;
+        document.getElementById('top-user-koins').textContent = formatKoins(data.top_user_koins || 0) + ' Koins';
+      }
     }).catch(() => {
-      document.getElementById('status-badge').textContent = '● Erro';
-      document.getElementById('status-emoji').textContent = '⚠️';
-      document.getElementById('status-text').textContent = 'Erro ao conectar';
+      document.getElementById('hero-emoji').textContent = '⚠️';
+      document.getElementById('hero-title').textContent = 'Erro ao Conectar';
+      document.getElementById('hero-sub').textContent = 'Não foi possível obter o status';
+      document.getElementById('hero-title').style.color = '#f87171';
     });
   </script>
 </body>

@@ -232,7 +232,7 @@
         entries.forEach((e, i) => {
           const rank = e.rank;
           const isTop3 = rank <= 3;
-          const name = getDisplayName(e.discord_id);
+          const name = getDisplayName(e);
           const row = document.createElement('div');
           row.className = 'lb-row';
           row.onclick = () => openProfile(e);
@@ -267,7 +267,7 @@
       order.forEach((idx, pos) => {
         const e = top3[idx];
         if (!e) return;
-        const name = getDisplayName(e.discord_id);
+        const name = getDisplayName(e);
         const div = document.createElement('div');
         div.className = 'podium-item';
         div.onclick = () => openProfile(e);
@@ -296,7 +296,7 @@
 
     function openProfile(entry) {
       const modal = document.getElementById('profile-modal');
-      const name = getDisplayName(entry.discord_id);
+      const name = getDisplayName(entry);
       document.getElementById('modal-avatar').src = `https://cdn.discordapp.com/embed/avatars/${parseInt(entry.discord_id) % 5}.png`;
       document.getElementById('modal-name').textContent = name;
       document.getElementById('modal-id').textContent = `ID: ${entry.discord_id}`;

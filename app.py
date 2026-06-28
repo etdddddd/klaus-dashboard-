@@ -358,7 +358,7 @@ def api_bot_status() -> Any:
         total_achievements = result3[0]["total"] if result3 else 0
 
         top_user = db["usuarios"].find_one(sort=[("koins", -1)])
-        top_name = str(top_user.get("discord_id", "N/A")) if top_user else "N/A"
+        top_name = top_user.get("username", str(top_user.get("discord_id", "N/A"))) if top_user else "N/A"
         top_koins = top_user.get("koins", 0) if top_user else 0
 
         return jsonify({
@@ -368,7 +368,8 @@ def api_bot_status() -> Any:
             "total_koins": total_koins,
             "total_commands": total_commands,
             "total_achievements": total_achievements,
-            "top_user_id": top_name,
+            "top_user_id": str(top_user.get("discord_id", "")) if top_user else "N/A",
+            "top_user_name": top_name,
             "top_user_koins": top_koins,
             "bot_name": "Klaus",
             "bot_version": "2.0",

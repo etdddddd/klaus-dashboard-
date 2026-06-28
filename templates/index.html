@@ -4,24 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Klaus Bot — O Bot Mais Completo do Discord</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=10">
+  <meta name="description" content="Klaus Bot: Economia, Moderação, Diversão, XP System e Dashboard Web. O bot mais completo para seu servidor Discord.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=20">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
+  <canvas id="particles-canvas"></canvas>
   <div class="bg-glow"></div>
   <div class="bg-glow bg-glow-2"></div>
   <div class="bg-glow bg-glow-3"></div>
 
-  <nav class="nav">
+  <nav class="nav" id="nav">
     <a href="/" class="nav-brand">
       <span class="brand-icon">💜</span>
       <span class="brand-text">KLAUS</span>
     </a>
     <div class="nav-links">
       <a href="#features" class="nav-link">Recursos</a>
-      <a href="#stats" class="nav-link">Stats</a>
       <a href="#commands" class="nav-link">Comandos</a>
+      <a href="#faq" class="nav-link">FAQ</a>
       {% if user %}
         <a href="/dashboard" class="btn btn-primary btn-sm">Dashboard</a>
       {% else %}
@@ -48,27 +50,31 @@
       {% endif %}
       <a href="#features" class="btn btn-ghost btn-lg">Ver Recursos ↓</a>
     </div>
+    <div class="live-status">
+      <span class="live-dot"></span>
+      Online agora — 24/7
+    </div>
   </section>
 
   <section class="stats-bar" id="stats">
     <div class="stat-item">
-      <span class="stat-number" data-count="25">25+</span>
+      <span class="stat-number" data-count="91">0</span>
       <span class="stat-label">Comandos</span>
     </div>
     <div class="stat-divider"></div>
     <div class="stat-item">
-      <span class="stat-number" data-count="1000">1000+</span>
+      <span class="stat-number" data-api="total_users" data-suffix="+">0</span>
       <span class="stat-label">Usuários</span>
     </div>
     <div class="stat-divider"></div>
     <div class="stat-item">
-      <span class="stat-number" data-count="99">99.9%</span>
-      <span class="stat-label">Uptime</span>
+      <span class="stat-number" data-api="total_koins" data-suffix="">0</span>
+      <span class="stat-label">Koins Circulantes</span>
     </div>
     <div class="stat-divider"></div>
     <div class="stat-item">
-      <span class="stat-number">24/7</span>
-      <span class="stat-label">Online</span>
+      <span class="stat-number" data-count="99" data-suffix=".9%">0</span>
+      <span class="stat-label">Uptime</span>
     </div>
   </section>
 
@@ -89,6 +95,7 @@
           <span class="tag">/trabalhar</span>
           <span class="tag">/minerar</span>
           <span class="tag">/loja</span>
+          <span class="tag">/forjar</span>
         </div>
       </div>
 
@@ -105,54 +112,56 @@
 
       <div class="feature-card" style="--accent: #ec4899">
         <div class="feature-icon">⚔️</div>
-        <h3>PvP</h3>
-        <p>Desafie outros jogadores em duelo, roube koins e cometa crimes!</p>
+        <h3>PvP & Aventura</h3>
+        <p>Desafie jogadores em duelo, roube koins, cometa crimes e heists!</p>
         <div class="feature-tags">
           <span class="tag">/duel</span>
           <span class="tag">/roubar</span>
           <span class="tag">/crime</span>
+          <span class="tag">/heist</span>
         </div>
       </div>
 
       <div class="feature-card" style="--accent: #14b8a6">
         <div class="feature-icon">🏦</div>
-        <h3>Poupança</h3>
-        <p>Deposite no cofre e ganhe 2% de juros por hora!</p>
+        <h3>Poupança & Investimentos</h3>
+        <p>Deposite no cofre com juros, invista em cripto, ações e imóveis!</p>
         <div class="feature-tags">
           <span class="tag">/cofre</span>
-          <span class="tag">/cofre_deposit</span>
+          <span class="tag">/invest</span>
+          <span class="tag">/lottery</span>
         </div>
       </div>
 
       <div class="feature-card" style="--accent: #f97316">
         <div class="feature-icon">🐾</div>
-        <h3>Pets</h3>
-        <p>Adote um pet, alimente, brinque e suba de level!</p>
+        <h3>Pets & Desafios</h3>
+        <p>Adote um pet, complete desafios diários e ganhe recompensas!</p>
         <div class="feature-tags">
           <span class="tag">/pet</span>
-          <span class="tag">/pet_feed</span>
-          <span class="tag">/pet_play</span>
+          <span class="tag">/challenges</span>
+          <span class="tag">/lucky_wheel</span>
         </div>
       </div>
 
       <div class="feature-card" style="--accent: #3b82f6">
         <div class="feature-icon">🎮</div>
         <h3>Diversão</h3>
-        <p>hug, kiss, slap, ship, batalha, piadas, memes e mais!</p>
+        <p>Truth or Dare, Magic Ball, hug, kiss, ship, batalha, piadas e memes!</p>
         <div class="feature-tags">
-          <span class="tag">/hug</span>
-          <span class="tag">/batalha</span>
-          <span class="tag">/piada</span>
+          <span class="tag">/tod</span>
+          <span class="tag">/magic</span>
+          <span class="tag">/ship</span>
         </div>
       </div>
 
       <div class="feature-card" style="--accent: #ef4444">
         <div class="feature-icon">🛡️</div>
-        <h3>Moderação</h3>
-        <p>Ban, kick, mute, warn, limpar mensagens e logs!</p>
+        <h3>Moderação & AutoMod</h3>
+        <p>Ban, kick, mute, warn, anti-spam, anti-links e logs automáticos!</p>
         <div class="feature-tags">
           <span class="tag">/ban</span>
-          <span class="tag">/kick</span>
+          <span class="tag">/automod</span>
           <span class="tag">/warn</span>
         </div>
       </div>
@@ -160,12 +169,14 @@
       <div class="feature-card feature-card-large" style="--accent: #8b5cf6">
         <div class="feature-icon">⚙️</div>
         <h3>Dashboard Web</h3>
-        <p>Configure boas-vindas, auto cargo, logs, XP e muito mais pelo site!</p>
+        <p>Configure boas-vindas, auto cargo, logs, XP, automod e cores pelo site! Tudo em tempo real.</p>
         <div class="feature-tags">
           <span class="tag">Boas-vindas</span>
           <span class="tag">Auto Cargo</span>
           <span class="tag">Logs</span>
           <span class="tag">XP System</span>
+          <span class="tag">AutoMod</span>
+          <span class="tag">Cores</span>
         </div>
       </div>
     </div>
@@ -174,7 +185,7 @@
   <div class="container" id="commands">
     <div class="section-header">
       <span class="section-badge">Comandos</span>
-      <h2>Lista de Comandos</h2>
+      <h2>91 Comandos Disponíveis</h2>
       <p>Use / para ver todos os comandos no Discord</p>
     </div>
 
@@ -215,23 +226,106 @@
         <div class="command-list">
           <div class="command-item"><code>/crime</code><span>Cometa crimes</span></div>
           <div class="command-item"><code>/roubar</code><span>Roube koins</span></div>
+          <div class="command-item"><code>/heist</code><span>Assalto bancário</span></div>
+          <div class="command-item"><code>/bounty</code><span>Coloque bounty</span></div>
           <div class="command-item"><code>/cofre</code><span>Sua poupança</span></div>
+          <div class="command-item"><code>/invest</code><span>Invista koins</span></div>
           <div class="command-item"><code>/pet</code><span>Adote um pet</span></div>
-          <div class="command-item"><code>/pet_feed</code><span>Alimente seu pet</span></div>
-          <div class="command-item"><code>/pet_play</code><span>Brinque com pet</span></div>
         </div>
       </div>
 
       <div class="command-category">
         <h3>🎮 Diversão</h3>
         <div class="command-list">
+          <div class="command-item"><code>/tod</code><span>Truth or Dare</span></div>
+          <div class="command-item"><code>/magic</code><span>Bola Mágica</span></div>
+          <div class="command-item"><code>/russian</code><span>Roulette Russo</span></div>
           <div class="command-item"><code>/hug</code><span>Abraçar</span></div>
           <div class="command-item"><code>/kiss</code><span>Beijo</span></div>
-          <div class="command-item"><code>/slap</code><span>Tapa</span></div>
           <div class="command-item"><code>/ship</code><span>Ship</span></div>
-          <div class="command-item"><code>/batalha</code><span>Batalha</span></div>
           <div class="command-item"><code>/piada</code><span>Piadas</span></div>
-          <div class="command-item"><code>/meme</code><span>Memes</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" id="faq">
+    <div class="section-header">
+      <span class="section-badge">Perguntas</span>
+      <h2>Perguntas Frequentes</h2>
+      <p>Tire suas dúvidas sobre o Klaus Bot</p>
+    </div>
+
+    <div class="faq-section">
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          Como adicionar o Klaus no meu servidor?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Clique em "Começar Agora" ou "Adicionar ao Discord", autorize o bot no Discord e ele estará pronto para usar! Não precisa de nenhum pagamento.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          O que são koins?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Koins são a moeda do Klaus! Você ganha com /daily, /trabalhar, /minerar e pode usar na loja, cassino, apostas e investimentos. Há um ranking dos mais ricos!
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          Como funciona o sistema de XP?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            A cada mensagem enviada, você ganha XP aleatório. Ao subir de level, o bot avisa no canal configurado. Use /rank para ver seu nível e /xpleaderboard para ver o ranking.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          O que é o cofre e como render juros?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Use /cofre_deposit para depositar koins no cofre. Eles rendem 2% de juros por hora! Quanto mais depositar, mais ganha. Você pode sacar a qualquer momento com /cofre_withdraw.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          Como configurar boas-vindas e auto cargo?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Acesse o Dashboard, selecione seu servidor e configure na aba "Boas-vindas" ou "Auto Cargo". Escolha o canal, a mensagem e ative! As configurações são aplicadas imediatamente.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          O Klaus é seguro e open source?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Sim! O Klaus não coleta dados pessoais e não tem acesso às suas mensagens além do necessário para funcionar. O bot é seguro e todas as configurações ficam no servidor do Discord.
+          </div>
         </div>
       </div>
     </div>
@@ -258,11 +352,81 @@
       <div class="footer-links">
         <a href="https://discord.gg/klaus" target="_blank">Suporte</a>
         <a href="/dashboard">Dashboard</a>
+        <a href="#commands">Comandos</a>
       </div>
     </div>
   </footer>
 
   <script>
+    // Particles
+    (function() {
+      const canvas = document.getElementById('particles-canvas');
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+      let w, h;
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      class Particle {
+        constructor() {
+          this.x = Math.random() * w;
+          this.y = Math.random() * h;
+          this.vx = (Math.random() - 0.5) * 0.3;
+          this.vy = (Math.random() - 0.5) * 0.3;
+          this.r = Math.random() * 2 + 0.5;
+          this.alpha = Math.random() * 0.3 + 0.05;
+        }
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+          if (this.x < 0 || this.x > w) this.vx *= -1;
+          if (this.y < 0 || this.y > h) this.vy *= -1;
+        }
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(139, 92, 246, ${this.alpha})`;
+          ctx.fill();
+        }
+      }
+
+      for (let i = 0; i < 60; i++) particles.push(new Particle());
+
+      function animate() {
+        ctx.clearRect(0, 0, w, h);
+        particles.forEach(p => { p.update(); p.draw(); });
+
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 150) {
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(139, 92, 246, ${0.05 * (1 - dist / 150)})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+      animate();
+    })();
+
+    // Nav scroll
+    window.addEventListener('scroll', () => {
+      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // Intersection observer
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(e => {
         if (e.isIntersecting) {
@@ -271,31 +435,50 @@
       });
     }, { threshold: 0.1 });
 
-    document.querySelectorAll('.feature-card, .command-category, .stat-item').forEach(el => {
+    document.querySelectorAll('.feature-card, .command-category, .stat-item, .faq-item, .guild-card').forEach(el => {
       observer.observe(el);
     });
 
-    const counters = document.querySelectorAll('.stat-number[data-count]');
-    const counterObserver = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          const el = e.target;
-          const target = parseInt(el.dataset.count);
-          let current = 0;
-          const step = Math.ceil(target / 50);
-          const timer = setInterval(() => {
-            current += step;
-            if (current >= target) {
-              current = target;
-              clearInterval(timer);
-            }
-            el.textContent = current + '+';
-          }, 30);
-          counterObserver.unobserve(el);
+    // Live stats from API
+    fetch('/api/stats').then(r => r.json()).then(data => {
+      document.querySelectorAll('.stat-number[data-api]').forEach(el => {
+        const key = el.dataset.api;
+        let val = data[key] || 0;
+        const suffix = el.dataset.suffix || '';
+        if (key === 'total_koins' && val > 1000000) {
+          val = (val / 1000000).toFixed(1) + 'M';
+        } else if (key === 'total_koins' && val > 1000) {
+          val = (val / 1000).toFixed(1) + 'K';
         }
+        el.textContent = val + suffix;
       });
-    }, { threshold: 0.5 });
-    counters.forEach(c => counterObserver.observe(c));
+    }).catch(() => {});
+
+    // Counter animation for static numbers
+    document.querySelectorAll('.stat-number[data-count]').forEach(el => {
+      const target = parseInt(el.dataset.count);
+      const suffix = el.dataset.suffix || '+';
+      const observer2 = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            let current = 0;
+            const step = Math.ceil(target / 50);
+            const timer = setInterval(() => {
+              current += step;
+              if (current >= target) { current = target; clearInterval(timer); }
+              el.textContent = current + suffix;
+            }, 30);
+            observer2.unobserve(el);
+          }
+        });
+      }, { threshold: 0.5 });
+      observer2.observe(el);
+    });
+
+    // FAQ toggle
+    function toggleFaq(el) {
+      el.closest('.faq-item').classList.toggle('open');
+    }
   </script>
 </body>
 </html>

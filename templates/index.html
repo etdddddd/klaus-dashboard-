@@ -447,10 +447,10 @@
         const key = el.dataset.api;
         let val = data[key] || 0;
         const suffix = el.dataset.suffix || '';
-        if (key === 'total_koins' && val > 1000000) {
-          val = (val / 1000000).toFixed(1) + 'M';
-        } else if (key === 'total_koins' && val > 1000) {
-          val = (val / 1000).toFixed(1) + 'K';
+        if (key === 'total_koins') {
+          if (val >= 1000000000) val = (val / 1000000000).toFixed(1) + 'B';
+          else if (val >= 1000000) val = (val / 1000000).toFixed(1) + 'M';
+          else if (val >= 1000) val = (val / 1000).toFixed(1) + 'K';
         }
         el.textContent = val + suffix;
       });

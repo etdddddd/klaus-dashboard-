@@ -180,9 +180,10 @@
     let currentPage = 1;
 
     function formatKoins(n) {
+      if (n >= 1000000000) return (n / 1000000000).toFixed(1) + 'B';
       if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
       if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
-      return n.toString();
+      return n.toLocaleString('pt-BR');
     }
 
     function loadPage(page) {

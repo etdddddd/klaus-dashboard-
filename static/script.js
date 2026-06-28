@@ -195,6 +195,34 @@ function setupPreview() {
     pick.addEventListener('input', () => { text.value = pick.value; updateColor(id); });
   });
 
+  ['welcome_image', 'farewell_image'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      const prefix = id.split('_')[0];
+      const img = document.getElementById(prefix + '-image');
+      if (img) {
+        if (el.value) {
+          img.src = el.value;
+          img.style.display = 'block';
+        } else {
+          img.style.display = 'none';
+          img.src = '';
+        }
+      }
+    });
+  });
+
+  ['welcome_footer', 'farewell_footer'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      const prefix = id.split('_')[0];
+      const footer = document.getElementById(prefix + '-footer');
+      if (footer) footer.textContent = el.value || 'Klaus Bot';
+    });
+  });
+
   ['embed_color_primary', 'embed_color_success', 'embed_color_error', 'embed_color_warning'].forEach(id => {
     const text = document.getElementById(id);
     const pick = document.getElementById(id + '_pick');

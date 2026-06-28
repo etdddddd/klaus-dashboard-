@@ -103,6 +103,12 @@
             <div class="embed" id="welcome-preview" style="border-left-color: {{ config.welcome_color }};">
               <h4 id="w-title">{{ config.welcome_title }}</h4>
               <p id="w-desc">{{ config.welcome_message }}</p>
+              {% if config.welcome_image %}
+              <img id="w-image" src="{{ config.welcome_image }}" style="width:100%;border-radius:8px;margin-top:0.5rem;max-height:200px;object-fit:cover;" onerror="this.style.display='none'">
+              {% else %}
+              <img id="w-image" style="display:none;width:100%;border-radius:8px;margin-top:0.5rem;max-height:200px;object-fit:cover;">
+              {% endif %}
+              <div id="w-footer" style="margin-top:0.5rem;font-size:0.75rem;color:var(--text2);">{{ config.welcome_footer }}</div>
             </div>
           </div>
         </div>
@@ -257,6 +263,12 @@
             <div class="embed" id="farewell-preview" style="border-left-color: {{ config.farewell_color }};">
               <h4 id="f-title">{{ config.farewell_title }}</h4>
               <p id="f-desc">{{ config.farewell_message }}</p>
+              {% if config.farewell_image %}
+              <img id="f-image" src="{{ config.farewell_image }}" style="width:100%;border-radius:8px;margin-top:0.5rem;max-height:200px;object-fit:cover;" onerror="this.style.display='none'">
+              {% else %}
+              <img id="f-image" style="display:none;width:100%;border-radius:8px;margin-top:0.5rem;max-height:200px;object-fit:cover;">
+              {% endif %}
+              <div id="f-footer" style="margin-top:0.5rem;font-size:0.75rem;color:var(--text2);">{{ config.farewell_footer }}</div>
             </div>
           </div>
         </div>

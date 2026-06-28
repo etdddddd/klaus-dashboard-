@@ -448,9 +448,12 @@
         let val = data[key] || 0;
         const suffix = el.dataset.suffix || '';
         if (key === 'total_koins') {
-          if (val >= 1000000000) val = (val / 1000000000).toFixed(1) + 'B';
-          else if (val >= 1000000) val = (val / 1000000).toFixed(1) + 'M';
-          else if (val >= 1000) val = (val / 1000).toFixed(1) + 'K';
+          if (val >= 1e18) val = (val / 1e18).toFixed(1) + 'Qi';
+          else if (val >= 1e15) val = (val / 1e15).toFixed(1) + 'Q';
+          else if (val >= 1e12) val = (val / 1e12).toFixed(1) + 'T';
+          else if (val >= 1e9) val = (val / 1e9).toFixed(1) + 'B';
+          else if (val >= 1e6) val = (val / 1e6).toFixed(1) + 'M';
+          else if (val >= 1e3) val = (val / 1e3).toFixed(1) + 'K';
         }
         el.textContent = val + suffix;
       });

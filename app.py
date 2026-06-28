@@ -449,9 +449,57 @@ def leaderboard_page() -> str:
     return render_template("leaderboard.html")
 
 
+PROFILE_BORDERS = {
+    "default": {"name": "Padrao", "emoji": "\u2b1c", "price": 0, "color": "#d946ef"},
+    "gold": {"name": "Dourado", "emoji": "\U0001f947", "price": 10000, "color": "#ffd700"},
+    "diamond": {"name": "Diamante", "emoji": "\U0001f48e", "price": 20000, "color": "#22d3ee"},
+    "ruby": {"name": "Rubi", "emoji": "\u2764\ufe0f", "price": 15000, "color": "#ef4444"},
+    "emerald": {"name": "Esmeralda", "emoji": "\U0001f49a", "price": 15000, "color": "#22c55e"},
+    "sapphire": {"name": "Safira", "emoji": "\U0001f499", "price": 15000, "color": "#3b82f6"},
+    "amethyst": {"name": "Ametista", "emoji": "\U0001f49c", "price": 20000, "color": "#a855f7"},
+    "rainbow": {"name": "Arco-iris", "emoji": "\U0001f308", "price": 50000, "color": "#f59e0b"},
+    "fire": {"name": "Fogo", "emoji": "\U0001f525", "price": 30000, "color": "#f97316"},
+    "ice": {"name": "Gelo", "emoji": "\u2744\ufe0f", "price": 30000, "color": "#7dd3fc"},
+    "galaxy": {"name": "Galaxia", "emoji": "\U0001f30c", "price": 40000, "color": "#c084fc"},
+    "shadow": {"name": "Shadow", "emoji": "\U0001f5a4", "price": 60000, "color": "#525252"},
+    "neon_pink": {"name": "Neon Rosa", "emoji": "\U0001f497", "price": 25000, "color": "#f472b6"},
+    "neon_cyan": {"name": "Neon Cyan", "emoji": "\U0001fa75", "price": 25000, "color": "#22d3ee"},
+    "cherry": {"name": "Cereja", "emoji": "\U0001f352", "price": 20000, "color": "#e11d48"},
+    "blood": {"name": "Sangue", "emoji": "\U0001fa78", "price": 35000, "color": "#991b1b"},
+    "platinum": {"name": "Platina", "emoji": "\u26aa", "price": 45000, "color": "#e2e8f0"},
+    "obsidian": {"name": "Obsidiana", "emoji": "\U0001f5a4", "price": 30000, "color": "#18181b"},
+    "neon_green": {"name": "Neon Verde", "emoji": "\U0001f49a", "price": 25000, "color": "#4ade80"},
+    "neon_yellow": {"name": "Neon Amarelo", "emoji": "\U0001f49b", "price": 25000, "color": "#facc15"},
+    "chrome": {"name": "Cromado", "emoji": "\U0001fa9e", "price": 50000, "color": "#d4d4d8"},
+    "sakura": {"name": "Sakura", "emoji": "\U0001f338", "price": 20000, "color": "#ec4899"},
+    "ocean": {"name": "Oceano", "emoji": "\U0001f30a", "price": 20000, "color": "#0ea5e9"},
+    "toxic": {"name": "Toxico", "emoji": "\u2622\ufe0f", "price": 40000, "color": "#a3e635"},
+    "royal": {"name": "Real", "emoji": "\U0001f451", "price": 35000, "color": "#facc15"},
+    "dragon": {"name": "Dragao", "emoji": "\U0001f409", "price": 55000, "color": "#f97316"},
+    "void": {"name": "Vazio", "emoji": "\U0001f573\ufe0f", "price": 70000, "color": "#09090b"},
+    "cosmic": {"name": "Cosmico", "emoji": "\U0001fa90", "price": 45000, "color": "#c084fc"},
+    "ember": {"name": "Brasa", "emoji": "\U0001f525", "price": 32000, "color": "#ff6347"},
+    "moonlight": {"name": "Luar", "emoji": "\U0001f319", "price": 28000, "color": "#c0c0c0"},
+    "aurora_border": {"name": "Aurora", "emoji": "\U0001f308", "price": 55000, "color": "#00ffff"},
+    "sakura_border": {"name": "Sakura", "emoji": "\U0001f338", "price": 25000, "color": "#ffb7c5"},
+    "golden_dust": {"name": "Poeira Dourada", "emoji": "\u2728", "price": 40000, "color": "#ffd700"},
+    "deep_sea": {"name": "Mar Profundo", "emoji": "\U0001f30a", "price": 35000, "color": "#0077be"},
+    "lavender": {"name": "Lavanda", "emoji": "\U0001f49c", "price": 22000, "color": "#b57edc"},
+    "jade_border": {"name": "Jade", "emoji": "\U0001f49a", "price": 30000, "color": "#00a86b"},
+    "crimson_border": {"name": "Carmesim", "emoji": "\u2764\ufe0f", "price": 45000, "color": "#dc143c"},
+    "frost": {"name": "Geada", "emoji": "\u2744\ufe0f", "price": 28000, "color": "#e0f0ff"},
+    "neon_purple": {"name": "Neon Roxo", "emoji": "\U0001f49c", "price": 35000, "color": "#bf00ff"},
+    "copper_border": {"name": "Cobre", "emoji": "\U0001f538", "price": 18000, "color": "#b87333"},
+    "emerald_border": {"name": "Esmeralda", "emoji": "\U0001f49a", "price": 50000, "color": "#50c878"},
+    "void_border": {"name": "Vazio", "emoji": "\U0001f573\ufe0f", "price": 75000, "color": "#1a1a2e"},
+    "solar_flare": {"name": "Explosao Solar", "emoji": "\u2600\ufe0f", "price": 60000, "color": "#ff8c00"},
+}
+
+
 @app.route("/profile")
-def profile_page() -> str:
-    return render_template("profile.html")
+@login_required
+def profile_page(user: dict) -> str:
+    return render_template("profile.html", user=user, backgrounds=PROFILE_BACKGROUNDS, borders=PROFILE_BORDERS)
 
 
 PROFILE_BACKGROUNDS = {

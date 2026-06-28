@@ -594,10 +594,7 @@ def api_profile_image(user_id: str) -> Any:
 
 @app.route("/profile")
 @login_required
-def profile_page() -> str:
-    user = fetch_user(session.get("token", ""))
-    if not user:
-        return redirect("/login")
+def profile_page(user: dict) -> str:
     return render_template("profile.html", user=user, backgrounds=PROFILE_BACKGROUNDS, borders=PROFILE_BORDERS)
 
 

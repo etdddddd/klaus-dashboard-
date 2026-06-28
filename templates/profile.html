@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Customizar Perfil - Klaus Bot</title>
+  <title>Loja de Perfil - Klaus Bot</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=30">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>">
 </head>
@@ -19,137 +19,81 @@
       <a href="/" class="nav-link">Home</a>
       <a href="/status" class="nav-link">Status</a>
       <a href="/leaderboard" class="nav-link">Leaderboard</a>
+      <a href="/profile" class="nav-link">Perfil</a>
       <a href="/dashboard" class="btn btn-primary btn-sm">Dashboard</a>
     </div>
   </nav>
 
   <div class="container">
     <div class="section-header" style="margin-bottom: 2rem;">
-      <span class="section-badge">🎨 Perfil</span>
+      <span class="section-badge">🎨 Loja de Perfil</span>
       <h2>Customize seu Perfil</h2>
-      <p>Use seus koins para comprar fundos e bordas exclusivas</p>
+      <p>Compre fundos e bordas exclusivas com seus koins</p>
     </div>
 
     <div class="profile-layout">
-      <div class="profile-preview-col">
-        <div class="card" style="padding: 0; overflow: hidden;">
-          <div class="profile-preview-header">
-            <h3>Preview</h3>
-            <span id="koins-display" class="badge badge-gold">💰 0</span>
+      <!-- PREVIEW -->
+      <div class="preview-col">
+        <div class="card" style="padding: 0; overflow: hidden; position: sticky; top: 80px;">
+          <div class="preview-header">
+            <h3>Preview do Perfil</h3>
+            <span id="koins-badge" class="badge badge-gold">💰 0</span>
           </div>
-          <div class="profile-preview" id="profile-preview">
-            <div class="preview-bg" id="preview-bg" style="background: #0f0a1a;">
-              <div class="preview-accent" id="preview-accent" style="background: linear-gradient(135deg, rgba(139,92,246,0.15), transparent);"></div>
-              <div class="preview-panel" id="preview-panel" style="background: rgba(139,92,246,0.08);">
-                <div class="preview-avatar-wrap">
-                  <img id="preview-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="" class="preview-avatar">
-                  <div class="preview-avatar-border" id="preview-avatar-border" style="border-color: #d946ef;"></div>
+          <div class="preview-body">
+            <div class="pf-card" id="pf-card">
+              <div class="pf-bg" id="pf-bg"></div>
+              <div class="pf-left" id="pf-left">
+                <div class="pf-avatar-wrap">
+                  <img id="pf-avatar" src="" alt="" class="pf-avatar">
+                  <div class="pf-avatar-ring" id="pf-ring"></div>
                 </div>
-                <div class="preview-username" id="preview-username">{{ user.username }}</div>
-                <div class="preview-rank" id="preview-rank">🏅 INICIANTE</div>
-                <div class="preview-pos" id="preview-pos">#-- no ranking</div>
-                <div class="preview-koins" id="preview-koins-value">💰 0</div>
+                <div class="pf-name" id="pf-name">Carregando...</div>
+                <div class="pf-rank" id="pf-rank">🏅 INICIANTE</div>
+                <div class="pf-pos" id="pf-pos">#-- no ranking</div>
+                <div class="pf-koins" id="pf-koins">💰 0</div>
               </div>
-              <div class="preview-stats">
-                <div class="preview-stat-row">
-                  <span class="preview-stat-label">💰 Koins</span>
-                  <span class="preview-stat-value" id="p-koins">0</span>
+              <div class="pf-right">
+                <div class="pf-stats">
+                  <div class="pf-stat"><span>💰 Koins</span><b id="ps-koins">0</b></div>
+                  <div class="pf-stat"><span>✅ Wins</span><b id="ps-wins">0</b></div>
+                  <div class="pf-stat"><span>❌ Losses</span><b id="ps-losses">0</b></div>
+                  <div class="pf-stat"><span>📈 Win Rate</span><b id="ps-wr">0%</b></div>
+                  <div class="pf-stat"><span>🔥 Streak</span><b id="ps-streak">0</b></div>
+                  <div class="pf-stat"><span>⚡ Comandos</span><b id="ps-cmds">0</b></div>
+                  <div class="pf-stat"><span>🏆 Conquistas</span><b id="ps-ach">0</b></div>
                 </div>
-                <div class="preview-stat-row">
-                  <span class="preview-stat-label">✅ Wins</span>
-                  <span class="preview-stat-value" id="p-wins">0</span>
-                </div>
-                <div class="preview-stat-row">
-                  <span class="preview-stat-label">❌ Losses</span>
-                  <span class="preview-stat-value" id="p-losses">0</span>
-                </div>
-                <div class="preview-stat-row">
-                  <span class="preview-stat-label">📈 Win Rate</span>
-                  <span class="preview-stat-value" id="p-winrate">0%</span>
-                </div>
-                <div class="preview-stat-row">
-                  <span class="preview-stat-label">🔥 Streak</span>
-                  <span class="preview-stat-value" id="p-streak">0 dias</span>
-                </div>
-                <div class="preview-stat-row">
-                  <span class="preview-stat-label">⚡ Comandos</span>
-                  <span class="preview-stat-value" id="p-cmds">0</span>
-                </div>
-                <div class="preview-stat-row">
-                  <span class="preview-stat-label">🏆 Conquistas</span>
-                  <span class="preview-stat-value" id="p-achiev">0</span>
+                <div class="pf-level">
+                  <span>⭐ Nível 1</span>
+                  <div class="pf-xp-bar"><div class="pf-xp-fill" style="width: 0%"></div></div>
+                  <span class="pf-xp-text">0/100 XP</span>
                 </div>
               </div>
             </div>
+          </div>
+          <div class="preview-footer">
+            <button class="btn btn-primary" onclick="saveAll()" id="save-btn">💾 Salvar Tudo</button>
           </div>
         </div>
       </div>
 
-      <div class="profile-customize-col">
-        <div class="card">
-          <h3 style="margin-bottom: 1rem;">🖼️ Fundos</h3>
-          <div class="shop-grid" id="bg-grid">
-            {% for key, bg in backgrounds.items() %}
-            <div class="shop-item {% if key == 'default' %}active{% endif %}" data-key="{{ key }}" data-type="bg" data-price="{{ bg.price }}" onclick="selectItem('bg', '{{ key }}')">
-              <div class="shop-item-preview" style="background: {{ bg.colors.bg }};">
-                <div class="shop-item-accent" style="background: {{ bg.colors.accent }};"></div>
-              </div>
-              <div class="shop-item-info">
-                <span class="shop-item-emoji">{{ bg.emoji }}</span>
-                <span class="shop-item-name">{{ bg.name }}</span>
-                <span class="shop-item-price" data-price="{{ bg.price }}">
-                  {% if bg.price == 0 %}Grátis{% else %}💰 {{ bg.price }}{% endif %}
-                </span>
-              </div>
-              <div class="shop-item-status" id="bg-status-{{ key }}">
-                {% if key in user.get('purchased_backgrounds', ['default']) %}
-                  {% if key == user.get('profile_background', 'default') %}
-                    <span class="badge badge-green">Ativo</span>
-                  {% else %}
-                    <span class="badge badge-yellow">Possui</span>
-                  {% endif %}
-                {% else %}
-                  <span class="badge badge-red">Comprar</span>
-                {% endif %}
-              </div>
-            </div>
-            {% endfor %}
+      <!-- SHOP -->
+      <div class="shop-col">
+        <!-- BACKGROUNDS -->
+        <div class="card shop-section">
+          <div class="shop-section-header">
+            <h3>🖼️ Fundos</h3>
+            <span class="shop-count" id="bg-count">0/15</span>
           </div>
+          <div class="shop-grid" id="bg-grid"></div>
         </div>
 
-        <div class="card" style="margin-top: 1.5rem;">
-          <h3 style="margin-bottom: 1rem;">⬜ Bordas</h3>
-          <div class="shop-grid" id="border-grid">
-            {% for key, b in borders.items() %}
-            <div class="shop-item {% if key == 'default' %}active{% endif %}" data-key="{{ key }}" data-type="border" data-price="{{ b.price }}" onclick="selectItem('border', '{{ key }}')">
-              <div class="shop-item-preview" style="background: #0a0a14;">
-                <div class="shop-item-border-preview" style="border-color: {{ b.color }};"></div>
-              </div>
-              <div class="shop-item-info">
-                <span class="shop-item-emoji">{{ b.emoji }}</span>
-                <span class="shop-item-name">{{ b.name }}</span>
-                <span class="shop-item-price" data-price="{{ b.price }}">
-                  {% if b.price == 0 %}Grátis{% else %}💰 {{ b.price }}{% endif %}
-                </span>
-              </div>
-              <div class="shop-item-status" id="border-status-{{ key }}">
-                {% if key in user.get('purchased_borders', ['default']) %}
-                  {% if key == user.get('profile_border', 'default') %}
-                    <span class="badge badge-green">Ativo</span>
-                  {% else %}
-                    <span class="badge badge-yellow">Possui</span>
-                  {% endif %}
-                {% else %}
-                  <span class="badge badge-red">Comprar</span>
-                {% endif %}
-              </div>
-            </div>
-            {% endfor %}
+        <!-- BORDERS -->
+        <div class="card shop-section" style="margin-top: 1.5rem;">
+          <div class="shop-section-header">
+            <h3>⬜ Bordas</h3>
+            <span class="shop-count" id="border-count">0/12</span>
           </div>
-        </div>
-
-        <div style="margin-top: 1.5rem; text-align: center;">
-          <button class="btn btn-primary btn-lg" onclick="saveProfile()" id="save-btn">💾 Salvar Mudanças</button>
+          <div class="shop-grid" id="border-grid"></div>
         </div>
       </div>
     </div>
@@ -160,252 +104,313 @@
   <style>
     .profile-layout {
       display: grid;
-      grid-template-columns: 400px 1fr;
+      grid-template-columns: 380px 1fr;
       gap: 2rem;
       align-items: start;
     }
-    @media (max-width: 900px) {
-      .profile-layout { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 900px) { .profile-layout { grid-template-columns: 1fr; } }
 
-    .profile-preview-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid var(--border);
+    .preview-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);
     }
-    .profile-preview-header h3 { margin: 0; font-size: 1rem; }
+    .preview-header h3 { margin: 0; font-size: 1rem; }
+    .preview-body { padding: 1.5rem; display: flex; justify-content: center; }
+    .preview-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); text-align: center; }
 
-    .profile-preview {
-      padding: 1.5rem;
+    .pf-card {
+      width: 340px; height: 280px; border-radius: 16px; overflow: hidden;
+      position: relative; transition: all 0.5s;
     }
-    .preview-bg {
-      border-radius: 16px;
-      overflow: hidden;
-      position: relative;
-      min-height: 400px;
-      transition: all 0.5s;
-    }
-    .preview-accent {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-    .preview-panel {
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 140px;
-      padding: 20px 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    .pf-bg {
+      position: absolute; inset: 0;
+      background: #0f0a1a;
       transition: background 0.5s;
     }
-    .preview-avatar-wrap {
-      position: relative;
-      margin-bottom: 8px;
+    .pf-bg::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(139,92,246,0.1), transparent);
     }
-    .preview-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      object-fit: cover;
+    .pf-left {
+      position: absolute; left: 0; top: 0; bottom: 0; width: 120px;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 16px 6px; z-index: 2;
+      background: rgba(139,92,246,0.06);
+      transition: background 0.5s;
     }
-    .preview-avatar-border {
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      border: 3px solid #d946ef;
-      transition: border-color 0.5s;
+    .pf-avatar-wrap { position: relative; margin-bottom: 6px; }
+    .pf-avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; }
+    .pf-avatar-ring {
+      position: absolute; inset: -4px; border-radius: 50%;
+      border: 3px solid #d946ef; transition: border-color 0.5s;
     }
-    .preview-username {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-align: center;
-      color: white;
-      margin-bottom: 4px;
+    .pf-name { font-size: 0.7rem; font-weight: 700; color: white; text-align: center; }
+    .pf-rank {
+      font-size: 0.5rem; padding: 2px 8px; border-radius: 10px;
+      background: rgba(139,92,246,0.2); color: #a78bfa; margin: 3px 0;
     }
-    .preview-rank {
-      font-size: 0.6rem;
-      padding: 2px 8px;
-      border-radius: 10px;
-      background: rgba(139,92,246,0.2);
-      color: var(--primary-light);
-      margin-bottom: 2px;
+    .pf-pos { font-size: 0.5rem; color: #5e5080; }
+    .pf-koins { font-size: 0.6rem; font-weight: 700; color: #ffd700; margin-top: 4px; }
+
+    .pf-right {
+      position: absolute; right: 0; top: 0; bottom: 0;
+      width: calc(100% - 120px); padding: 12px 14px; z-index: 2;
     }
-    .preview-pos {
-      font-size: 0.55rem;
-      color: var(--text3);
-      margin-bottom: 6px;
+    .pf-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+    .pf-stat {
+      display: flex; justify-content: space-between; padding: 4px 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.55rem;
     }
-    .preview-koins {
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: #ffd700;
+    .pf-stat span { color: #5e5080; }
+    .pf-stat b { color: white; font-weight: 700; }
+    .pf-level { margin-top: 10px; }
+    .pf-level span { font-size: 0.55rem; color: #a78bfa; font-weight: 700; }
+    .pf-xp-bar {
+      width: 100%; height: 8px; background: rgba(255,255,255,0.06);
+      border-radius: 4px; margin: 4px 0; overflow: hidden;
     }
-    .preview-stats {
-      position: absolute;
-      right: 10px;
-      top: 15px;
-      width: calc(100% - 160px);
+    .pf-xp-fill {
+      height: 100%; background: linear-gradient(90deg, #8b5cf6, #d946ef);
+      border-radius: 4px; transition: width 0.5s;
     }
-    .preview-stat-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 5px 8px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      font-size: 0.6rem;
+    .pf-xp-text { font-size: 0.45rem; color: #5e5080; }
+
+    .shop-section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
     }
-    .preview-stat-label { color: var(--text3); }
-    .preview-stat-value { color: white; font-weight: 700; }
+    .shop-section-header h3 { margin: 0; }
+    .shop-count { font-size: 0.8rem; color: var(--text3); }
 
     .shop-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: 0.8rem;
     }
-    .shop-item {
-      background: rgba(10, 7, 20, 0.6);
-      border: 1px solid var(--border2);
-      border-radius: 14px;
-      cursor: pointer;
-      transition: all 0.3s;
-      overflow: hidden;
+    .shop-card {
+      background: rgba(10, 7, 20, 0.6); border: 1px solid var(--border2);
+      border-radius: 14px; cursor: pointer; transition: all 0.3s; overflow: hidden;
     }
-    .shop-item:hover {
-      border-color: var(--primary);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    .shop-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+    .shop-card.owned { border-color: rgba(34,197,94,0.3); }
+    .shop-card.active { border-color: var(--primary); box-shadow: 0 0 20px rgba(139,92,246,0.15); }
+
+    .sc-preview {
+      height: 48px; position: relative; overflow: hidden;
     }
-    .shop-item.active {
-      border-color: var(--primary);
-      box-shadow: 0 0 20px rgba(139,92,246,0.15);
+    .sc-accent { position: absolute; inset: 0; opacity: 0.35; }
+    .sc-border-circle {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 3px solid; margin: 6px auto;
     }
-    .shop-item-preview {
-      height: 50px;
-      position: relative;
-      overflow: hidden;
+    .sc-info { padding: 6px 10px 4px; display: flex; align-items: center; gap: 5px; }
+    .sc-emoji { font-size: 1rem; }
+    .sc-name { font-size: 0.78rem; font-weight: 600; flex: 1; }
+    .sc-price { font-size: 0.68rem; color: var(--primary-light); font-weight: 600; }
+    .sc-actions { padding: 2px 10px 8px; display: flex; gap: 4px; }
+    .sc-btn {
+      flex: 1; padding: 4px 0; border-radius: 6px; border: none; font-size: 0.65rem;
+      font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit;
     }
-    .shop-item-accent {
-      position: absolute;
-      inset: 0;
-      opacity: 0.3;
-    }
-    .shop-item-border-preview {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 3px solid;
-      margin: 5px auto;
-    }
-    .shop-item-info {
-      padding: 8px 10px 4px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .shop-item-emoji { font-size: 1.1rem; }
-    .shop-item-name { font-size: 0.8rem; font-weight: 600; flex: 1; }
-    .shop-item-price { font-size: 0.7rem; color: var(--primary-light); font-weight: 600; }
-    .shop-item-status {
-      padding: 2px 10px 8px;
-    }
-    .shop-item-status .badge { font-size: 0.65rem; padding: 2px 8px; }
+    .sc-btn-equip { background: var(--primary); color: white; }
+    .sc-btn-equip:hover { background: var(--primary-dark); }
+    .sc-btn-buy { background: rgba(255,215,0,0.15); color: #ffd700; border: 1px solid rgba(255,215,0,0.2); }
+    .sc-btn-buy:hover { background: rgba(255,215,0,0.25); }
+    .sc-btn-active { background: rgba(34,197,94,0.15); color: #4ade80; cursor: default; }
   </style>
 
   <script>
     const USER_ID = "{{ user.id }}";
-    const BACKGROUNDS = {{ backgrounds | tojson }};
+    const BGS = {{ backgrounds | tojson }};
     const BORDERS = {{ borders | tojson }};
 
-    let currentBg = "{{ user.get('profile_background', 'default') }}";
-    let currentBorder = "{{ user.get('profile_border', 'default') }}";
-    let koins = {{ user.get('koins', 0) if user.get('koins') else 0 }};
+    let profile = {};
+    let activeBg = "default";
+    let activeBorder = "default";
 
-    function formatKoins(n) {
-      if (n >= 1e18) return (n / 1e18).toFixed(1) + 'Qi';
-      if (n >= 1e15) return (n / 1e15).toFixed(1) + 'Q';
-      if (n >= 1e12) return (n / 1e12).toFixed(1) + 'T';
-      if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B';
-      if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
-      if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+    function fmt(n) {
+      if (n >= 1e18) return (n/1e18).toFixed(1)+'Qi';
+      if (n >= 1e15) return (n/1e15).toFixed(1)+'Q';
+      if (n >= 1e12) return (n/1e12).toFixed(1)+'T';
+      if (n >= 1e9) return (n/1e9).toFixed(1)+'B';
+      if (n >= 1e6) return (n/1e6).toFixed(1)+'M';
+      if (n >= 1e3) return (n/1e3).toFixed(1)+'K';
       return n.toLocaleString('pt-BR');
     }
 
-    function selectItem(type, key) {
-      if (type === 'bg') {
-        currentBg = key;
-        document.querySelectorAll('#bg-grid .shop-item').forEach(el => el.classList.remove('active'));
-        document.querySelector(`#bg-grid .shop-item[data-key="${key}"]`).classList.add('active');
-        updatePreview();
-      } else {
-        currentBorder = key;
-        document.querySelectorAll('#border-grid .shop-item').forEach(el => el.classList.remove('active'));
-        document.querySelector(`#border-grid .shop-item[data-key="${key}"]`).classList.add('active');
-        updatePreview();
+    function renderShop() {
+      const ownedBg = profile.purchased_backgrounds || ["default"];
+      const ownedBorder = profile.purchased_borders || ["default"];
+      let bgOwned = 0, borderOwned = 0;
+
+      // Backgrounds
+      const bgGrid = document.getElementById('bg-grid');
+      bgGrid.innerHTML = '';
+      for (const [key, bg] of Object.entries(BGS)) {
+        const owned = ownedBg.includes(key);
+        const active = key === activeBg;
+        if (owned) bgOwned++;
+        const card = document.createElement('div');
+        card.className = `shop-card ${owned ? 'owned' : ''} ${active ? 'active' : ''}`;
+        card.innerHTML = `
+          <div class="sc-preview" style="background:${bg.colors.bg}">
+            <div class="sc-accent" style="background:${bg.colors.accent}"></div>
+          </div>
+          <div class="sc-info">
+            <span class="sc-emoji">${bg.emoji}</span>
+            <span class="sc-name">${bg.name}</span>
+            <span class="sc-price">${bg.price === 0 ? 'Grátis' : '💰'+fmt(bg.price)}</span>
+          </div>
+          <div class="sc-actions">
+            ${active ? '<button class="sc-btn sc-btn-active">✅ Ativo</button>' :
+              owned ? `<button class="sc-btn sc-btn-equip" onclick="equipBg('${key}')">Equipar</button>` :
+              `<button class="sc-btn sc-btn-buy" onclick="buyItem('backgrounds','${key}',${bg.price})">Comprar</button>`
+            }
+          </div>`;
+        bgGrid.appendChild(card);
       }
+      document.getElementById('bg-count').textContent = `${bgOwned}/${Object.keys(BGS).length}`;
+
+      // Borders
+      const borderGrid = document.getElementById('border-grid');
+      borderGrid.innerHTML = '';
+      for (const [key, b] of Object.entries(BORDERS)) {
+        const owned = ownedBorder.includes(key);
+        const active = key === activeBorder;
+        if (owned) borderOwned++;
+        const card = document.createElement('div');
+        card.className = `shop-card ${owned ? 'owned' : ''} ${active ? 'active' : ''}`;
+        card.innerHTML = `
+          <div class="sc-preview" style="background:#0a0a14">
+            <div class="sc-border-circle" style="border-color:${b.color}"></div>
+          </div>
+          <div class="sc-info">
+            <span class="sc-emoji">${b.emoji}</span>
+            <span class="sc-name">${b.name}</span>
+            <span class="sc-price">${b.price === 0 ? 'Grátis' : '💰'+fmt(b.price)}</span>
+          </div>
+          <div class="sc-actions">
+            ${active ? '<button class="sc-btn sc-btn-active">✅ Ativo</button>' :
+              owned ? `<button class="sc-btn sc-btn-equip" onclick="equipBorder('${key}')">Equipar</button>` :
+              `<button class="sc-btn sc-btn-buy" onclick="buyItem('borders','${key}',${b.price})">Comprar</button>`
+            }
+          </div>`;
+        borderGrid.appendChild(card);
+      }
+      document.getElementById('border-count').textContent = `${borderOwned}/${Object.keys(BORDERS).length}`;
     }
 
     function updatePreview() {
-      const bg = BACKGROUNDS[currentBg];
-      const border = BORDERS[currentBorder];
+      const bg = BGS[activeBg];
+      const border = BORDERS[activeBorder];
       if (bg) {
-        document.getElementById('preview-bg').style.background = bg.colors.bg;
-        document.getElementById('preview-accent').style.background = `linear-gradient(135deg, ${bg.colors.accent}22, transparent)`;
-        document.getElementById('preview-panel').style.background = bg.colors.accent + '14';
+        document.getElementById('pf-bg').style.background = bg.colors.bg;
+        document.getElementById('pf-left').style.background = bg.colors.accent + '10';
+        document.querySelector('.pf-bg::after') // can't do pseudo, use overlay
       }
       if (border) {
-        document.getElementById('preview-avatar-border').style.borderColor = border.color;
+        document.getElementById('pf-ring').style.borderColor = border.color;
       }
     }
 
-    async function saveProfile() {
-      const btn = document.getElementById('save-btn');
-      btn.disabled = true;
-      btn.textContent = 'Salvando...';
+    function equipBg(key) {
+      activeBg = key;
+      renderShop();
+      updatePreview();
+      showToast('🖼️ Fundo selecionado — clique Salvar');
+    }
 
+    function equipBorder(key) {
+      activeBorder = key;
+      renderShop();
+      updatePreview();
+      showToast('⬜ Borda selecionada — clique Salvar');
+    }
+
+    async function buyItem(type, key, price) {
+      if (!confirm(`Comprar por ${fmt(price)} koins?`)) return;
       try {
-        const resp = await fetch(`/api/profile_config/${USER_ID}/set`, {
+        const r = await fetch('/api/profile_buy', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ background: currentBg, border: currentBorder }),
+          body: JSON.stringify({ user_id: USER_ID, type, key }),
         });
-        const data = await resp.json();
+        const data = await r.json();
         if (data.ok) {
-          showAlert('✅ Perfil salvo com sucesso!', 'success');
+          profile.koins = data.new_koins;
+          if (type === 'backgrounds') {
+            profile.purchased_backgrounds = profile.purchased_backgrounds || [];
+            profile.purchased_backgrounds.push(key);
+            activeBg = key;
+          } else {
+            profile.purchased_borders = profile.purchased_borders || [];
+            profile.purchased_borders.push(key);
+            activeBorder = key;
+          }
+          document.getElementById('koins-badge').textContent = '💰 ' + fmt(profile.koins);
+          document.getElementById('pf-koins').textContent = '💰 ' + fmt(profile.koins);
+          document.getElementById('ps-koins').textContent = fmt(profile.koins);
+          renderShop();
+          updatePreview();
+          showAlert('🎉 Comprou com sucesso!', 'success');
         } else {
-          showAlert('❌ Erro ao salvar perfil', 'error');
+          showAlert('❌ ' + (data.error || 'Erro ao comprar'), 'error');
         }
       } catch (e) {
         showAlert('❌ Erro de conexão', 'error');
       }
+    }
 
-      btn.disabled = false;
-      btn.textContent = '💾 Salvar Mudanças';
+    async function saveAll() {
+      const btn = document.getElementById('save-btn');
+      btn.disabled = true; btn.textContent = 'Salvando...';
+      try {
+        await fetch(`/api/profile_config/${USER_ID}/set`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ background: activeBg, border: activeBorder }),
+        });
+        showAlert('✅ Perfil salvo!', 'success');
+      } catch (e) {
+        showAlert('❌ Erro ao salvar', 'error');
+      }
+      btn.disabled = false; btn.textContent = '💾 Salvar Tudo';
     }
 
     function showAlert(msg, type) {
       const box = document.getElementById('alert-box');
-      const div = document.createElement('div');
-      div.className = `alert alert-${type}`;
-      div.textContent = msg;
-      box.appendChild(div);
-      setTimeout(() => div.remove(), 3000);
+      const d = document.createElement('div');
+      d.className = `alert alert-${type}`; d.textContent = msg;
+      box.appendChild(d); setTimeout(() => d.remove(), 3000);
+    }
+    function showToast(msg) {
+      const box = document.getElementById('alert-box');
+      const d = document.createElement('div');
+      d.className = 'alert alert-success'; d.textContent = msg;
+      box.appendChild(d); setTimeout(() => d.remove(), 2000);
     }
 
-    // Load user profile data
+    // Load data
     fetch(`/api/profile_config/${USER_ID}`).then(r => r.json()).then(data => {
-      koins = data.koins || 0;
-      document.getElementById('koins-display').textContent = `💰 ${formatKoins(koins)}`;
-      document.getElementById('preview-koins-value').textContent = `💰 ${formatKoins(koins)}`;
-      document.getElementById('p-koins').textContent = formatKoins(koins);
-      document.getElementById('preview-username').textContent = data.username || '{{ user.username }}';
-    }).catch(() => {});
+      profile = data;
+      activeBg = data.background || 'default';
+      activeBorder = data.border || 'default';
 
-    updatePreview();
+      document.getElementById('koins-badge').textContent = '💰 ' + fmt(data.koins);
+      document.getElementById('pf-avatar').src = data.avatar_url;
+      document.getElementById('pf-name').textContent = data.username;
+      document.getElementById('pf-koins').textContent = '💰 ' + fmt(data.koins);
+      document.getElementById('ps-koins').textContent = fmt(data.koins);
+      document.getElementById('ps-wins').textContent = data.wins || 0;
+      document.getElementById('ps-losses').textContent = data.losses || 0;
+      const wr = (data.wins || 0) + (data.losses || 0) > 0 ? Math.round((data.wins / ((data.wins||0) + (data.losses||0))) * 100) : 0;
+      document.getElementById('ps-wr').textContent = wr + '%';
+      document.getElementById('ps-streak').textContent = (data.daily_streak || 0) + ' dias';
+      document.getElementById('ps-cmds').textContent = fmt(data.commands_used || 0);
+      document.getElementById('ps-ach').textContent = data.achievements || 0;
+
+      renderShop();
+      updatePreview();
+    });
   </script>
 </body>
 </html>

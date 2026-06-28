@@ -489,10 +489,18 @@ def api_profile_config(user_id: str) -> Any:
         doc = db_conn["usuarios"].find_one({"discord_id": int(user_id)})
         if not doc:
             return jsonify({"error": "user not found"}), 404
+        av = doc.get("avatar", "")
+        avatar_url = f"https://cdn.discordapp.com/avatars/{user_id}/{av}.png?size=256" if av else f"https://cdn.discordapp.com/embed/avatars/{int(user_id) % 6}.png"
         return jsonify({
             "discord_id": str(doc.get("discord_id", "")),
             "username": doc.get("username", f"User#{user_id[-4:]}"),
+            "avatar_url": avatar_url,
             "koins": doc.get("koins", 0),
+            "wins": doc.get("wins", 0),
+            "losses": doc.get("losses", 0),
+            "commands_used": doc.get("commands_used", 0),
+            "daily_streak": doc.get("daily_streak", 0),
+            "achievements": len(doc.get("achievements", [])),
             "background": doc.get("profile_background", "default"),
             "border": doc.get("profile_border", "default"),
             "purchased_backgrounds": doc.get("purchased_backgrounds", ["default"]),
@@ -519,6 +527,49 @@ def api_profile_config_set(user_id: str) -> Any:
                 upsert=True,
             )
         return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/profile_buy", methods=["POST"])
+def api_profile_buy() -> Any:
+    try:
+        data = request.get_json()
+        user_id = data.get("user_id")
+        item_type = data.get("type")
+        item_key = data.get("key")
+        if not user_id or not item_type or not item_key:
+            return jsonify({"error": "missing params"}), 400
+
+        items = PROFILE_BACKGROUNDS if item_type == "backgrounds" else PROFILE_BORDERS
+        item = items.get(item_key)
+        if not item:
+            return jsonify({"error": "item not found"}), 404
+
+        db_conn = get_db()
+        doc = db_conn["usuarios"].find_one({"discord_id": int(user_id)})
+        if not doc:
+            return jsonify({"error": "user not found"}), 404
+
+        koins = doc.get("koins", 0)
+        purchased_field = f"purchased_{item_type}"
+        purchased = doc.get(purchased_field, [])
+
+        if item_key in purchased:
+            return jsonify({"error": "already owned"}), 400
+
+        if koins < item["price"]:
+            return jsonify({"error": "insufficient koins", "needed": item["price"], "have": koins}), 400
+
+        db_conn["usuarios"].update_one(
+            {"discord_id": int(user_id)},
+            {
+                "$inc": {"koins": -item["price"]},
+                "$push": {purchased_field: item_key},
+            },
+            upsert=True,
+        )
+        return jsonify({"ok": True, "new_koins": koins - item["price"]})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

@@ -634,9 +634,9 @@ def api_profile_config(user_id: str) -> Any:
             "commands_used": doc.get("commands_used", 0),
             "daily_streak": doc.get("daily_streak", 0),
             "achievements": len(doc.get("achievements", [])),
-            "background": doc.get("profile_background", "default"),
+            "background": doc.get("profile_background", "padrao"),
             "border": doc.get("profile_border", "default"),
-            "purchased_backgrounds": doc.get("purchased_backgrounds", ["default"]),
+            "purchased_backgrounds": doc.get("purchased_backgrounds", ["padrao"]),
             "purchased_borders": doc.get("purchased_borders", ["default"]),
         })
     except Exception as e:

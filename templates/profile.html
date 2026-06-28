@@ -25,7 +25,7 @@
   </nav>
 
   <div class="container">
-    <!-- LIVE PREVIEW + PILLOW IMAGE -->
+    <!-- PILLOW IMAGE -->
     <div class="profile-hero">
       <div class="pf-image-wrap" id="pf-image-wrap">
         <img id="pf-image" src="" alt="Profile" class="pf-image" style="display:none">
@@ -43,33 +43,6 @@
           Editar Perfil
         </button>
         <span id="koins-badge" class="badge badge-gold">0 Koins</span>
-      </div>
-    </div>
-
-    <!-- LIVE CSS PREVIEW -->
-    <div class="card live-preview-card" id="live-preview-card" style="max-width:600px;margin:0 auto 2rem;display:none">
-      <div class="lp-header">
-        <span>Preview em tempo real</span>
-        <span class="lp-hint">Mude fundo/borda abaixo</span>
-      </div>
-      <div class="lp-body">
-        <div class="lp-left" id="lp-left">
-          <div class="lp-avatar-ring" id="lp-ring"></div>
-          <img id="lp-avatar" src="" class="lp-avatar">
-          <div class="lp-name" id="lp-name">...</div>
-          <div class="lp-badge" id="lp-badge">INICIANTE</div>
-          <div class="lp-pos" id="lp-pos">#-- no ranking</div>
-          <div class="lp-koins" id="lp-koins">0</div>
-        </div>
-        <div class="lp-right">
-          <div class="lp-stat"><span>Koins</span><b id="lp-s-koins">0</b></div>
-          <div class="lp-stat"><span>Wins</span><b id="lp-s-wins">0</b></div>
-          <div class="lp-stat"><span>Losses</span><b id="lp-s-losses">0</b></div>
-          <div class="lp-stat"><span>Win Rate</span><b id="lp-s-wr">0%</b></div>
-          <div class="lp-stat"><span>Streak</span><b id="lp-s-streak">0</b></div>
-          <div class="lp-stat"><span>Comandos</span><b id="lp-s-cmds">0</b></div>
-          <div class="lp-level"><span>Nivel 1</span><div class="lp-xp"><div class="lp-xp-fill" style="width:0%"></div></div></div>
-        </div>
       </div>
     </div>
 
@@ -96,10 +69,6 @@
         <div class="shop-grid" id="border-grid"></div>
       </div>
 
-      <div class="shop-save-bar">
-        <button class="btn btn-primary" onclick="saveAll()" id="save-btn">Salvar Alteracoes</button>
-        <div class="save-status" id="save-status"></div>
-      </div>
     </div>
   </div>
 
@@ -120,39 +89,6 @@
     .pf-no-image code { background:rgba(139,92,246,0.15); padding:2px 8px; border-radius:4px; color:var(--primary-light); font-size:0.85rem; }
     .spinner { width:32px; height:32px; border:3px solid rgba(139,92,246,0.2); border-top-color:var(--primary); border-radius:50%; animation:spin 0.8s linear infinite; }
     @keyframes spin { to { transform:rotate(360deg); } }
-
-    .live-preview-card { overflow:hidden; transition:all 0.3s; }
-    .lp-header { display:flex; justify-content:space-between; align-items:center; padding:0.8rem 1.2rem; border-bottom:1px solid var(--border); }
-    .lp-header span:first-child { font-weight:700; font-size:0.85rem; }
-    .lp-hint { font-size:0.7rem; color:var(--text3); }
-    .lp-body {
-      display:flex; min-height:160px; position:relative; overflow:hidden;
-      background:#0f0a1a; border-radius:0 0 12px 12px; transition:background 0.4s;
-    }
-    .lp-left {
-      width:140px; display:flex; flex-direction:column; align-items:center;
-      padding:16px 6px; position:relative; z-index:2; text-align:center;
-      transition:background 0.4s; background:rgba(139,92,246,0.08);
-    }
-    .lp-avatar { width:72px; height:72px; border-radius:50%; object-fit:cover; position:relative; z-index:1; }
-    .lp-avatar-ring {
-      position:absolute; width:80px; height:80px; top:8px;
-      border-radius:50%; z-index:0; transition:border-color 0.4s;
-      border:3px solid #d946ef;
-    }
-    .lp-left > .lp-avatar { margin-top:4px; }
-    .lp-name { font-size:0.78rem; font-weight:700; color:white; margin-top:6px; }
-    .lp-badge { font-size:0.55rem; padding:2px 8px; border-radius:10px; background:rgba(139,92,246,0.2); color:#a78bfa; margin:4px 0; }
-    .lp-pos { font-size:0.55rem; color:#5e5080; }
-    .lp-koins { font-size:0.7rem; font-weight:700; color:#ffd700; margin-top:4px; }
-    .lp-right { flex:1; padding:14px 16px; }
-    .lp-stat { display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.65rem; }
-    .lp-stat span { color:#5e5080; }
-    .lp-stat b { color:white; font-weight:700; }
-    .lp-level { margin-top:10px; }
-    .lp-level span { font-size:0.6rem; color:#a78bfa; font-weight:700; }
-    .lp-xp { width:100%; height:6px; background:rgba(255,255,255,0.06); border-radius:3px; margin-top:4px; overflow:hidden; }
-    .lp-xp-fill { height:100%; background:linear-gradient(90deg,#8b5cf6,#d946ef); border-radius:3px; transition:width 0.5s; }
 
     .shop-section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
     .shop-section-header h3 { margin:0; }
@@ -178,6 +114,39 @@
     .sc-btn-active { background:rgba(34,197,94,0.15); color:#4ade80; cursor:default; }
     .shop-save-bar { text-align:center; margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border); }
     .save-status { font-size:0.75rem; color:#4ade80; margin-top:0.5rem; min-height:1.2rem; transition:opacity 0.3s; }
+
+    .confirm-overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px);
+      display:flex; align-items:center; justify-content:center; z-index:9999;
+      opacity:0; transition:opacity 0.3s;
+    }
+    .confirm-overlay.open { opacity:1; }
+    .confirm-modal {
+      background:linear-gradient(135deg,#13101f 0%,#1a1030 100%);
+      border:1px solid rgba(139,92,246,0.3); border-radius:20px;
+      padding:2.5rem 2rem; text-align:center; max-width:380px; width:90%;
+      box-shadow:0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(139,92,246,0.15);
+      transform:scale(0.8); transition:transform 0.3s;
+    }
+    .confirm-overlay.open .confirm-modal { transform:scale(1); }
+    .confirm-emoji { font-size:3.5rem; margin-bottom:0.8rem; filter:drop-shadow(0 4px 12px rgba(139,92,246,0.3)); }
+    .confirm-title { font-size:1.3rem; font-weight:800; color:white; margin-bottom:0.5rem; }
+    .confirm-msg { font-size:0.85rem; color:var(--text3); line-height:1.5; margin-bottom:1.8rem; }
+    .confirm-msg b { color:var(--primary-light); }
+    .confirm-actions { display:flex; gap:0.8rem; }
+    .confirm-btn {
+      flex:1; padding:0.7rem 0; border-radius:10px; border:none; font-size:0.85rem;
+      font-weight:700; cursor:pointer; transition:all 0.2s; font-family:inherit;
+    }
+    .confirm-cancel {
+      background:rgba(255,255,255,0.06); color:var(--text3); border:1px solid var(--border2);
+    }
+    .confirm-cancel:hover { background:rgba(255,255,255,0.1); color:white; }
+    .confirm-ok {
+      background:linear-gradient(135deg,var(--primary),var(--pink)); color:white;
+      box-shadow:0 4px 20px rgba(139,92,246,0.3);
+    }
+    .confirm-ok:hover { transform:translateY(-2px); box-shadow:0 6px 25px rgba(139,92,246,0.4); }
   </style>
 
   <script>
@@ -186,7 +155,7 @@
     const BORDERS = {{ borders | tojson }};
 
     let profile = {};
-    let activeBg = "default";
+    let activeBg = "padrao";
     let activeBorder = "default";
 
     function fmt(n) {
@@ -199,28 +168,26 @@
       return n.toLocaleString('pt-BR');
     }
 
-    function updateLivePreview() {
-      const bg = BGS[activeBg] || BGS['default'];
-      const border = BORDERS[activeBorder] || BORDERS['default'];
-      if (!bg || !border) return;
-
-      const card = document.querySelector('.lp-body');
-      const left = document.getElementById('lp-left');
-      const ring = document.getElementById('lp-ring');
-
-      if (card) card.style.background = bg.colors.bg;
-      if (left) left.style.background = bg.colors.accent + '18';
-      if (ring) ring.style.borderColor = border.color;
-
-      document.getElementById('lp-s-koins').textContent = fmt(profile.koins || 0);
-      document.getElementById('lp-s-wins').textContent = profile.wins || 0;
-      document.getElementById('lp-s-losses').textContent = profile.losses || 0;
-      const wr = (profile.wins || 0) + (profile.losses || 0) > 0 ? Math.round((profile.wins / ((profile.wins||0) + (profile.losses||0))) * 100) : 0;
-      document.getElementById('lp-s-wr').textContent = wr + '%';
-      document.getElementById('lp-s-streak').textContent = (profile.daily_streak || 0) + ' dias';
-      document.getElementById('lp-s-cmds').textContent = fmt(profile.commands_used || 0);
-
-      document.getElementById('live-preview-card').style.display = 'block';
+    function showConfirm(title, msg, emoji) {
+      return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'confirm-overlay';
+        overlay.innerHTML = `
+          <div class="confirm-modal">
+            <div class="confirm-emoji">${emoji || '💜'}</div>
+            <div class="confirm-title">${title}</div>
+            <div class="confirm-msg">${msg}</div>
+            <div class="confirm-actions">
+              <button class="confirm-btn confirm-cancel">Cancelar</button>
+              <button class="confirm-btn confirm-ok">Confirmar</button>
+            </div>
+          </div>`;
+        document.body.appendChild(overlay);
+        requestAnimationFrame(() => overlay.classList.add('open'));
+        overlay.querySelector('.confirm-cancel').onclick = () => { overlay.classList.remove('open'); setTimeout(() => overlay.remove(), 300); resolve(false); };
+        overlay.querySelector('.confirm-ok').onclick = () => { overlay.classList.remove('open'); setTimeout(() => overlay.remove(), 300); resolve(true); };
+        overlay.onclick = (e) => { if (e.target === overlay) { overlay.classList.remove('open'); setTimeout(() => overlay.remove(), 300); resolve(false); } };
+      });
     }
 
     function loadProfileImage() {
@@ -233,7 +200,7 @@
     }
 
     function renderShop() {
-      const ownedBg = profile.purchased_backgrounds || ["default"];
+      const ownedBg = profile.purchased_backgrounds || ["padrao"];
       const ownedBorder = profile.purchased_borders || ["default"];
       let bgOwned = 0, borderOwned = 0;
 
@@ -251,7 +218,7 @@
           <div class="sc-actions">
             ${active?'<button class="sc-btn sc-btn-active">Ativo</button>':
               owned?`<button class="sc-btn sc-btn-equip" onclick="equipBg('${key}')">Equipar</button>`:
-              `<button class="sc-btn sc-btn-buy" onclick="buyItem('backgrounds','${key}',${bg.price})">Comprar</button>`}
+              `<button class="sc-btn sc-btn-buy" onclick="buyItem('backgrounds','${key}',${bg.price},'${bg.name}','${bg.emoji}')">Comprar</button>`}
           </div>`;
         bgGrid.appendChild(card);
       }
@@ -271,7 +238,7 @@
           <div class="sc-actions">
             ${active?'<button class="sc-btn sc-btn-active">Ativo</button>':
               owned?`<button class="sc-btn sc-btn-equip" onclick="equipBorder('${key}')">Equipar</button>`:
-              `<button class="sc-btn sc-btn-buy" onclick="buyItem('borders','${key}',${b.price})">Comprar</button>`}
+              `<button class="sc-btn sc-btn-buy" onclick="buyItem('borders','${key}',${b.price},'${b.name}','${b.emoji}')">Comprar</button>`}
           </div>`;
         borderGrid.appendChild(card);
       }
@@ -285,29 +252,29 @@
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({ background: activeBg, border: activeBorder }),
         });
-        const st = document.getElementById('save-status');
-        st.textContent = 'Salvo automaticamente!';
-        st.style.opacity = '1';
-        setTimeout(() => { st.style.opacity = '0.5'; }, 2000);
       } catch(e) {}
     }
 
     function equipBg(key) {
       activeBg = key;
       renderShop();
-      updateLivePreview();
       autoSave();
     }
 
     function equipBorder(key) {
       activeBorder = key;
       renderShop();
-      updateLivePreview();
       autoSave();
     }
 
-    async function buyItem(type, key, price) {
-      if (!confirm(`Comprar por ${fmt(price)} koins?`)) return;
+    async function buyItem(type, key, price, name, emoji) {
+      const itemType = type === 'backgrounds' ? 'fundo' : 'borda';
+      const confirmed = await showConfirm(
+        `${emoji} ${name}`,
+        `Voce tem certeza que quer comprar este ${itemType} por <b>${fmt(price)} koins</b>?`,
+        emoji
+      );
+      if (!confirmed) return;
       try {
         const r = await fetch('/api/profile_buy', {
           method: 'POST',
@@ -328,7 +295,6 @@
           }
           document.getElementById('koins-badge').textContent = fmt(profile.koins) + ' Koins';
           renderShop();
-          updateLivePreview();
           autoSave();
           showAlert('Comprou e equipou!', 'success');
         } else {
@@ -337,22 +303,6 @@
       } catch (e) {
         showAlert('Erro de conexao', 'error');
       }
-    }
-
-    async function saveAll() {
-      const btn = document.getElementById('save-btn');
-      btn.disabled = true; btn.textContent = 'Salvando...';
-      try {
-        await fetch(`/api/profile_config/${USER_ID}/set`, {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ background: activeBg, border: activeBorder }),
-        });
-        showAlert('Perfil salvo! Roda /perfil no Discord pra atualizar a imagem.', 'success');
-      } catch (e) {
-        showAlert('Erro ao salvar', 'error');
-      }
-      btn.disabled = false; btn.textContent = 'Salvar Alteracoes';
     }
 
     function showAlert(msg, type) {
@@ -364,16 +314,10 @@
 
     fetch(`/api/profile_config/${USER_ID}`).then(r => r.json()).then(data => {
       profile = data;
-      activeBg = data.background || 'default';
+      activeBg = data.background || 'padrao';
       activeBorder = data.border || 'default';
       document.getElementById('koins-badge').textContent = fmt(data.koins) + ' Koins';
-      document.getElementById('lp-name').textContent = data.global_name || data.username;
-      document.getElementById('lp-avatar').src = data.avatar_url;
-      document.getElementById('lp-badge').textContent = 'KLAUS';
-      document.getElementById('lp-pos').textContent = `#${data.rank || '?'} no ranking`;
-      document.getElementById('lp-koins').textContent = 'K ' + fmt(data.koins);
       renderShop();
-      updateLivePreview();
       loadProfileImage();
     });
   </script>

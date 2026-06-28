@@ -331,13 +331,18 @@ def api_profile_config(user_id: str) -> Any:
             return jsonify({"koins": 0, "background": "padrao", "border": "default",
                             "purchased_backgrounds": ["padrao"],
                             "purchased_borders": ["default"]})
-        profile = doc.get("profile", {})
+        purchased_bg = doc.get("purchased_backgrounds", ["padrao"])
+        purchased_bd = doc.get("purchased_borders", ["default"])
+        if not isinstance(purchased_bg, list):
+            purchased_bg = ["padrao"]
+        if not isinstance(purchased_bd, list):
+            purchased_bd = ["default"]
         return jsonify({
             "koins": doc.get("koins", 0),
-            "background": profile.get("background", "padrao"),
-            "border": profile.get("border", "default"),
-            "purchased_backgrounds": profile.get("purchased_backgrounds", ["padrao"]),
-            "purchased_borders": profile.get("purchased_borders", ["default"]),
+            "background": doc.get("profile_background", "padrao"),
+            "border": doc.get("profile_border", "default"),
+            "purchased_backgrounds": purchased_bg,
+            "purchased_borders": purchased_bd,
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -350,9 +355,9 @@ def api_profile_config_set(user_id: str) -> Any:
         data = request.get_json(force=True)
         update = {"$set": {}}
         if "background" in data:
-            update["$set"]["profile.background"] = data["background"]
+            update["$set"]["profile_background"] = data["background"]
         if "border" in data:
-            update["$set"]["profile.border"] = data["border"]
+            update["$set"]["profile_border"] = data["border"]
         db["usuarios"].update_one({"discord_id": int(user_id)}, update, upsert=True)
         return jsonify({"ok": True})
     except Exception as e:
@@ -372,8 +377,10 @@ def api_profile_buy() -> Any:
 
         if item_type == "backgrounds":
             item = PROFILE_BACKGROUNDS.get(key)
+            field = "profile_background"
         else:
             item = PROFILE_BORDERS.get(key)
+            field = "profile_border"
         if not item:
             return jsonify({"error": "item not found"}), 404
 
@@ -386,8 +393,8 @@ def api_profile_buy() -> Any:
             {"discord_id": int(user_id)},
             {
                 "$inc": {"koins": -item["price"]},
-                "$addToSet": {f"profile.purchased_{item_type}": key},
-                "$set": {f"profile.{'background' if item_type == 'backgrounds' else 'border'}": key},
+                "$addToSet": {"purchased_backgrounds" if item_type == "backgrounds" else "purchased_borders": key},
+                "$set": {field: key},
             },
             upsert=True,
         )
@@ -401,7 +408,7 @@ def api_profile_image(user_id: str) -> Any:
     try:
         db = get_db()
         doc = db["usuarios"].find_one({"discord_id": int(user_id)})
-        img_b64 = doc.get("profile_image", "") if doc else ""
+        img_b64 = doc.get("profile_image_b64", "") if doc else ""
         if not img_b64:
             return "", 204
         import base64 as _b64

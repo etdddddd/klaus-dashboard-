@@ -90,6 +90,16 @@ def index() -> str:
     return render_template("index.html", user=user, backgrounds=PROFILE_BACKGROUNDS, borders=PROFILE_BORDERS)
 
 
+@app.route("/terms")
+def terms() -> str:
+    return render_template("terms.html")
+
+
+@app.route("/privacy")
+def privacy() -> str:
+    return render_template("privacy.html")
+
+
 @app.route("/login")
 def login() -> redirect:
     return redirect(

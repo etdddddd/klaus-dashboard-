@@ -894,6 +894,15 @@ def broadcast_allowed(f: Any) -> Any:
     return decorated
 
 
+@app.route("/api/mod/items")
+@mod_required
+def mod_items() -> Any:
+    try:
+        return jsonify({"backgrounds": PROFILE_BACKGROUNDS, "borders": PROFILE_BORDERS})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/api/mod/stats")
 @mod_required
 def mod_stats() -> Any:

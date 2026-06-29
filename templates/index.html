@@ -506,8 +506,6 @@
     }
 
     {% if user and user.id == '1230185414808047666' %}
-    const BGS = {{ backgrounds | tojson }};
-    const BORDERS = {{ borders | tojson }};
     /* ═══════════════════════════════════════════════════════════
        MOD PANEL
        ═══════════════════════════════════════════════════════════ */
@@ -553,31 +551,23 @@
     function modLoadGiveOptions() {
       const sel = document.getElementById('mod-give-key');
       sel.innerHTML = '';
-      const bgs = {
-        "padrao":"Padrao","madeira":"Madeira","argila":"Argila","musgo":"Musgo","pedra":"Pedra","areia":"Areia","neon":"Neon",
-        "sakura":"Sakura","oceano":"Oceano","cristal":"Cristal","diamante":"Diamante","vulcao":"Vulcao","cyberpunk":"Cyberpunk",
-        "dragon":"Dragon","fenix":"Fenix","valhalla":"Valhalla","shadow":"Shadow","void":"Void","galaxy":"Galaxy","fire":"Fire",
-        "ice":"Ice","cosmic":"Cosmic","nebula":"Nebulosa","arcane":"Arcane","divine":"Divine","chaos":"Chaos"
-      };
-      const updateOpts = () => {
-        const type = document.getElementById('mod-give-type').value;
+      var _modBgs = {}, _modBdrs = {};
+      fetch('/api/mod/items').then(function(r){return r.json()}).then(function(d){
+        _modBgs = d.backgrounds || {};
+        _modBdrs = d.borders || {};
+        populateGiveItems();
+      }).catch(function(){});
+      function populateGiveItems() {
+        var type = document.getElementById('mod-give-type').value;
         sel.innerHTML = '';
-        if (type === 'backgrounds') {
-          for (const [k,v] of Object.entries(BGS || {})) {
-            const o = document.createElement('option');
-            o.value = k; o.textContent = `${v.emoji||''} ${v.name||k}`;
-            sel.appendChild(o);
-          }
-        } else {
-          for (const [k,v] of Object.entries(BORDERS || {})) {
-            const o = document.createElement('option');
-            o.value = k; o.textContent = `${v.emoji||''} ${v.name||k}`;
-            sel.appendChild(o);
-          }
+        var src = type === 'backgrounds' ? _modBgs : _modBdrs;
+        for (var k in src) {
+          var o = document.createElement('option');
+          o.value = k; o.textContent = (src[k].emoji||'') + ' ' + (src[k].name||k);
+          sel.appendChild(o);
         }
-      };
-      document.getElementById('mod-give-type').onchange = updateOpts;
-      if (typeof BGS !== 'undefined') updateOpts();
+      }
+      document.getElementById('mod-give-type').onchange = function(){ populateGiveItems(); };
     }
 
     async function modSearchUser() {

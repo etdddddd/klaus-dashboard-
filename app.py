@@ -1210,3 +1210,204 @@ def mod_user_profile(user_id: str) -> Any:
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/user_warns/<user_id>")
+@mod_required
+def mod_user_warns(user_id: str) -> Any:
+    try:
+        db = get_db()
+        warns = list(db["warns"].find({"user_id": int(user_id)}).sort("_id", -1))
+        result = []
+        for w in warns:
+            result.append({
+                "guild_id": w.get("guild_id", 0),
+                "moderator": w.get("moderator", 0),
+                "reason": w.get("reason", ""),
+            })
+        return jsonify({"warns": result, "total": len(result)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/set_xp", methods=["POST"])
+@mod_required
+def mod_set_xp() -> Any:
+    try:
+        db = get_db()
+        data = request.get_json(force=True)
+        user_id = data.get("user_id", "").strip()
+        guild_id = data.get("guild_id", "").strip()
+        xp = data.get("xp", 0)
+        if not user_id or not user_id.isdigit():
+            return jsonify({"error": "ID invalido"}), 400
+        if not guild_id or not guild_id.isdigit():
+            return jsonify({"error": "Guild ID invalido"}), 400
+        key = {"discord_id": int(user_id), "guild_id": int(guild_id)}
+        doc = db["users_xp"].find_one(key)
+        old_level = doc.get("level", 0) if doc else 0
+        from config import settings as cfg
+        level = 0
+        remaining = xp
+        while True:
+            needed = 5 * (level ** 2) + 50 * level + 100
+            if remaining < needed:
+                break
+            remaining -= needed
+            level += 1
+        db["users_xp"].update_one(key, {"$set": {"xp": int(xp), "level": level}}, upsert=True)
+        return jsonify({"ok": True, "level": level})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/user_investments/<user_id>")
+@mod_required
+def mod_user_investments(user_id: str) -> Any:
+    try:
+        db = get_db()
+        doc = db["usuarios"].find_one({"discord_id": int(user_id)})
+        investments = doc.get("investments", []) if doc else []
+        result = []
+        for inv in investments:
+            result.append({
+                "type": inv.get("type", ""),
+                "amount": inv.get("amount", 0),
+                "status": inv.get("status", ""),
+                "created_at": str(inv.get("created_at", "")),
+            })
+        return jsonify({"investments": result, "total": len(result)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/add_achievement", methods=["POST"])
+@mod_required
+def mod_add_achievement() -> Any:
+    try:
+        db = get_db()
+        data = request.get_json(force=True)
+        user_id = data.get("user_id", "").strip()
+        achievement = data.get("achievement", "").strip()
+        remove = data.get("remove", False)
+        if not user_id or not user_id.isdigit():
+            return jsonify({"error": "ID invalido"}), 400
+        if not achievement:
+            return jsonify({"error": "Conquista vazia"}), 400
+        if remove:
+            db["usuarios"].update_one(
+                {"discord_id": int(user_id)},
+                {"$pull": {"achievements": achievement}},
+            )
+        else:
+            db["usuarios"].update_one(
+                {"discord_id": int(user_id)},
+                {"$addToSet": {"achievements": achievement}},
+                upsert=True,
+            )
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/reset_profile", methods=["POST"])
+@mod_required
+def mod_reset_profile() -> Any:
+    try:
+        db = get_db()
+        data = request.get_json(force=True)
+        user_id = data.get("user_id", "").strip()
+        if not user_id or not user_id.isdigit():
+            return jsonify({"error": "ID invalido"}), 400
+        db["usuarios"].update_one(
+            {"discord_id": int(user_id)},
+            {"$set": {
+                "profile_background": "padrao",
+                "profile_border": "default",
+                "profile_image_b64": "",
+            }},
+        )
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/user_pet/<user_id>")
+@mod_required
+def mod_user_pet(user_id: str) -> Any:
+    try:
+        db = get_db()
+        doc = db["usuarios"].find_one({"discord_id": int(user_id)})
+        pet = doc.get("pet", None) if doc else None
+        if not pet:
+            return jsonify({"pet": None})
+        return jsonify({
+            "pet": {
+                "name": pet.get("name", ""),
+                "type": pet.get("type", ""),
+                "level": pet.get("level", 0),
+                "hunger": pet.get("hunger", 100),
+                "happiness": pet.get("happiness", 100),
+                "xp": pet.get("xp", 0),
+            }
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/leave_server", methods=["POST"])
+@mod_required
+def mod_leave_server() -> Any:
+    try:
+        data = request.get_json(force=True)
+        guild_id = data.get("guild_id", "").strip()
+        if not guild_id or not guild_id.isdigit():
+            return jsonify({"error": "ID invalido"}), 400
+        BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
+        if not BOT_TOKEN:
+            return jsonify({"error": "BOT_TOKEN nao configurado"}), 500
+        r = requests.delete(
+            f"https://discord.com/api/v10/guilds/{guild_id}",
+            headers={"Authorization": f"Bot {BOT_TOKEN}"},
+            timeout=10,
+        )
+        if r.status_code in (200, 204):
+            return jsonify({"ok": True})
+        return jsonify({"error": f"Discord API: {r.status_code} {r.text[:200]}"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/servers")
+@mod_required
+def mod_servers() -> Any:
+    try:
+        db = get_db()
+        guilds = list(db["guilds"].find())
+        result = []
+        for g in guilds:
+            result.append({
+                "guild_id": str(g.get("guild_id", "")),
+                "name": g.get("name", "Unknown"),
+                "welcome_enabled": g.get("welcome_enabled", False),
+                "xp_enabled": g.get("xp_enabled", False),
+            })
+        return jsonify({"guilds": result})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/leaderboard_snapshot")
+@mod_required
+def mod_leaderboard_snapshot() -> Any:
+    try:
+        db = get_db()
+        top_rich = list(db["usuarios"].find().sort("koins", -1).limit(10))
+        top_active = list(db["usuarios"].find().sort("commands_used", -1).limit(10))
+        top_streak = list(db["usuarios"].find().sort("daily_streak", -1).limit(10))
+        rich = [{"username": u.get("username", "?"), "koins": u.get("koins", 0)} for u in top_rich]
+        active = [{"username": u.get("username", "?"), "commands": u.get("commands_used", 0)} for u in top_active]
+        streak = [{"username": u.get("username", "?"), "streak": u.get("daily_streak", 0)} for u in top_streak]
+        return jsonify({"rich": rich, "active": active, "streak": streak})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

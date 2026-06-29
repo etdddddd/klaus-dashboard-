@@ -811,6 +811,165 @@
         else showAlertMod(d.error||'Erro','error');
       } catch(e) { showAlertMod('Erro de conexao','error'); }
     }
+
+    async function modViewWarns() {
+      var id = document.getElementById('mod-warns-view-id').value.trim();
+      if (!id) { showAlertMod('Preencha o ID', 'error'); return; }
+      var el = document.getElementById('mod-warns-result');
+      el.innerHTML = '<div style="color:var(--text3);font-size:0.85rem;">Carregando...</div>';
+      try {
+        var r = await fetch('/api/mod/user_warns/' + id);
+        var d = await r.json();
+        if (d.error) { el.innerHTML = '<div style="color:#f43f5e;">' + d.error + '</div>'; return; }
+        if (!d.warns || d.warns.length === 0) { el.innerHTML = '<div style="color:var(--text3);font-size:0.85rem;">Nenhum warn</div>'; return; }
+        var html = '<div style="font-size:0.8rem;color:var(--text3);margin-bottom:0.5rem;">Total: <b style="color:#f59e0b;">' + d.total + '</b> warns</div>';
+        for (var w of d.warns) {
+          html += '<div class="mod-user-row"><div class="mod-user-info"><div class="mod-user-name">Servidor: ' + w.guild_id + '</div><div class="mod-user-id">Mod: ' + w.moderator + ' | ' + w.reason + '</div></div></div>';
+        }
+        el.innerHTML = html;
+      } catch(e) { el.innerHTML = '<div style="color:#f43f5e;">Erro de conexao</div>'; }
+    }
+
+    async function modSetXP() {
+      var id = document.getElementById('mod-xp-id').value.trim();
+      var guild = document.getElementById('mod-xp-guild').value.trim();
+      var xp = document.getElementById('mod-xp-value').value.trim();
+      if (!id || !guild || !xp) { showAlertMod('Preencha todos os campos', 'error'); return; }
+      var c = await showConfirmMod('Definir XP', 'Definir <b>' + xp + ' XP</b> para <b>' + id + '</b> no servidor <b>' + guild + '</b>?', '\u2728');
+      if (!c) return;
+      try {
+        var r = await fetch('/api/mod/set_xp', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:id,guild_id:guild,xp:parseInt(xp)})});
+        var d = await r.json();
+        if (d.ok) showAlertMod('XP definido! Level: ' + d.level, 'success');
+        else showAlertMod(d.error||'Erro','error');
+      } catch(e) { showAlertMod('Erro de conexao','error'); }
+    }
+
+    async function modViewInvestments() {
+      var id = document.getElementById('mod-inv-id').value.trim();
+      if (!id) { showAlertMod('Preencha o ID', 'error'); return; }
+      var el = document.getElementById('mod-inv-result');
+      el.innerHTML = '<div style="color:var(--text3);font-size:0.85rem;">Carregando...</div>';
+      try {
+        var r = await fetch('/api/mod/user_investments/' + id);
+        var d = await r.json();
+        if (d.error) { el.innerHTML = '<div style="color:#f43f5e;">' + d.error + '</div>'; return; }
+        if (!d.investments || d.investments.length === 0) { el.innerHTML = '<div style="color:var(--text3);font-size:0.85rem;">Nenhum investimento</div>'; return; }
+        var html = '<div style="font-size:0.8rem;color:var(--text3);margin-bottom:0.5rem;">Total: <b style="color:#22c55e;">' + d.total + '</b> investimentos</div>';
+        for (var i of d.investments) {
+          var statusColor = i.status === 'active' ? '#22c55e' : '#f43f5e';
+          html += '<div class="mod-user-row"><div class="mod-user-info"><div class="mod-user-name">' + i.type + ' — ' + fmt(i.amount) + ' koins</div><div class="mod-user-id">Status: <span style="color:' + statusColor + ';">' + i.status + '</span></div></div></div>';
+        }
+        el.innerHTML = html;
+      } catch(e) { el.innerHTML = '<div style="color:#f43f5e;">Erro de conexao</div>'; }
+    }
+
+    async function modAddAchievement() {
+      var id = document.getElementById('mod-ach-id').value.trim();
+      var key = document.getElementById('mod-ach-key').value.trim();
+      if (!id || !key) { showAlertMod('Preencha ID e chave', 'error'); return; }
+      try {
+        var r = await fetch('/api/mod/add_achievement', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:id,achievement:key,remove:false})});
+        var d = await r.json();
+        if (d.ok) showAlertMod('Conquista adicionada!', 'success');
+        else showAlertMod(d.error||'Erro','error');
+      } catch(e) { showAlertMod('Erro de conexao','error'); }
+    }
+
+    async function modRemoveAchievement() {
+      var id = document.getElementById('mod-ach-id').value.trim();
+      var key = document.getElementById('mod-ach-key').value.trim();
+      if (!id || !key) { showAlertMod('Preencha ID e chave', 'error'); return; }
+      var c = await showConfirmMod('Remover Conquista', 'Remover <b>' + key + '</b> de <b>' + id + '</b>?', '\uD83D\uDEAB');
+      if (!c) return;
+      try {
+        var r = await fetch('/api/mod/add_achievement', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:id,achievement:key,remove:true})});
+        var d = await r.json();
+        if (d.ok) showAlertMod('Conquista removida!', 'success');
+        else showAlertMod(d.error||'Erro','error');
+      } catch(e) { showAlertMod('Erro de conexao','error'); }
+    }
+
+    async function modResetProfile() {
+      var id = document.getElementById('mod-reset-prof-id').value.trim();
+      if (!id) { showAlertMod('Preencha o ID', 'error'); return; }
+      var c = await showConfirmMod('Reset Profile', 'Resetar fundo, borda e imagem de <b>' + id + '</b>?', '\uD83D\uDD04');
+      if (!c) return;
+      try {
+        var r = await fetch('/api/mod/reset_profile', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:id})});
+        var d = await r.json();
+        if (d.ok) showAlertMod('Profile resetado!', 'success');
+        else showAlertMod(d.error||'Erro','error');
+      } catch(e) { showAlertMod('Erro de conexao','error'); }
+    }
+
+    async function modViewPet() {
+      var id = document.getElementById('mod-pet-id').value.trim();
+      if (!id) { showAlertMod('Preencha o ID', 'error'); return; }
+      var el = document.getElementById('mod-pet-result');
+      el.innerHTML = '<div style="color:var(--text3);font-size:0.85rem;">Carregando...</div>';
+      try {
+        var r = await fetch('/api/mod/user_pet/' + id);
+        var d = await r.json();
+        if (d.error) { el.innerHTML = '<div style="color:#f43f5e;">' + d.error + '</div>'; return; }
+        if (!d.pet) { el.innerHTML = '<div style="color:var(--text3);font-size:0.85rem;">Nenhum pet</div>'; return; }
+        var p = d.pet;
+        var html = '<div class="mod-user-row" style="flex-wrap:wrap;"><div class="mod-user-info"><div class="mod-user-name">' + p.name + ' (' + p.type + ')</div><div class="mod-user-id" style="display:flex;gap:1rem;flex-wrap:wrap;"><span>Level: <b style="color:#8b5cf6;">' + p.level + '</b></span><span>Fome: <b style="color:#22c55e;">' + p.hunger + '%</b></span><span>Felicidade: <b style="color:#f59e0b;">' + p.happiness + '%</b></span><span>XP: <b style="color:var(--text1);">' + p.xp + '</b></span></div></div></div>';
+        el.innerHTML = html;
+      } catch(e) { el.innerHTML = '<div style="color:#f43f5e;">Erro de conexao</div>'; }
+    }
+
+    async function modLoadServers() {
+      var el = document.getElementById('mod-servers-list');
+      el.innerHTML = '<div style="color:var(--text3);font-size:0.85rem;">Carregando...</div>';
+      try {
+        var r = await fetch('/api/mod/servers');
+        var d = await r.json();
+        if (d.error) { el.innerHTML = '<div style="color:#f43f5e;">' + d.error + '</div>'; return; }
+        if (!d.guilds || d.guilds.length === 0) { el.innerHTML = '<div style="color:var(--text3);font-size:0.85rem;">Nenhum servidor</div>'; return; }
+        var html = '';
+        for (var g of d.guilds) {
+          html += '<div class="mod-user-row"><div class="mod-user-info"><div class="mod-user-name">' + g.name + '</div><div class="mod-user-id" style="display:flex;gap:1rem;flex-wrap:wrap;"><span>ID: ' + g.guild_id + '</span><span>XP: <span style="color:' + (g.xp_enabled?'#22c55e':'#f43f5e') + ';">' + (g.xp_enabled?'On':'Off') + '</span></span><span>Welcome: <span style="color:' + (g.welcome_enabled?'#22c55e':'#f43f5e') + ';">' + (g.welcome_enabled?'On':'Off') + '</span></span></div></div><button class="mod-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:white;font-size:0.75rem;padding:0.4rem 0.8rem;" onclick="modLeaveServer(\'' + g.guild_id + '\',\'' + g.name.replace(/'/g,"\\'") + '\')">Sair</button></div>';
+        }
+        el.innerHTML = html;
+      } catch(e) { el.innerHTML = '<div style="color:#f43f5e;">Erro de conexao</div>'; }
+    }
+
+    async function modLeaveServer(guildId, name) {
+      var c = await showConfirmMod('Sair do Servidor', 'Sair de <b>' + name + '</b> (' + guildId + ')?', '\uD83D\uDEAA');
+      if (!c) return;
+      try {
+        var r = await fetch('/api/mod/leave_server', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({guild_id:guildId})});
+        var d = await r.json();
+        if (d.ok) { showAlertMod('Saiu do servidor!', 'success'); modLoadServers(); }
+        else showAlertMod(d.error||'Erro','error');
+      } catch(e) { showAlertMod('Erro de conexao','error'); }
+    }
+
+    async function modLeaderboard() {
+      var el = document.getElementById('mod-lb-result');
+      el.innerHTML = '<div style="color:var(--text3);font-size:0.85rem;">Carregando...</div>';
+      try {
+        var r = await fetch('/api/mod/leaderboard_snapshot');
+        var d = await r.json();
+        if (d.error) { el.innerHTML = '<div style="color:#f43f5e;">' + d.error + '</div>'; return; }
+        var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">';
+        html += '<div><div style="font-weight:700;font-size:0.85rem;margin-bottom:0.5rem;color:#ffd700;">Mais Ricos</div>';
+        for (var i = 0; i < d.rich.length; i++) {
+          html += '<div style="font-size:0.8rem;color:var(--text3);padding:0.3rem 0;">#' + (i+1) + ' ' + d.rich[i].username + ' — <b style="color:#ffd700;">' + fmt(d.rich[i].koins) + '</b></div>';
+        }
+        html += '</div><div><div style="font-weight:700;font-size:0.85rem;margin-bottom:0.5rem;color:#8b5cf6;">Mais Ativos</div>';
+        for (var i = 0; i < d.active.length; i++) {
+          html += '<div style="font-size:0.8rem;color:var(--text3);padding:0.3rem 0;">#' + (i+1) + ' ' + d.active[i].username + ' — <b style="color:#8b5cf6;">' + fmt(d.active[i].commands) + '</b></div>';
+        }
+        html += '</div><div><div style="font-weight:700;font-size:0.85rem;margin-bottom:0.5rem;color:#f97316;">Maior Streak</div>';
+        for (var i = 0; i < d.streak.length; i++) {
+          html += '<div style="font-size:0.8rem;color:var(--text3);padding:0.3rem 0;">#' + (i+1) + ' ' + d.streak[i].username + ' — <b style="color:#f97316;">' + d.streak[i].streak + ' dias</b></div>';
+        }
+        html += '</div></div>';
+        el.innerHTML = html;
+      } catch(e) { el.innerHTML = '<div style="color:#f43f5e;">Erro de conexao</div>'; }
+    }
     {% endif %}
   </script>
 
@@ -988,6 +1147,81 @@
         <button class="mod-btn" style="background:rgba(255,255,255,0.06);color:var(--text3);border:1px solid var(--border2);" onclick="modLoadBroadcasts()">Ver Historico</button>
       </div>
       <div id="mod-broadcasts-list" style="margin-top:1rem;"></div>
+    </div>
+
+    <div class="mod-card">
+      <h3 style="margin-bottom:1rem;">Ver Warns</h3>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <input type="text" id="mod-warns-view-id" placeholder="ID do Discord" style="width:200px;padding:0.7rem 1rem;border-radius:10px;border:1px solid var(--border2);background:rgba(10,7,20,0.6);color:white;font-size:0.85rem;font-family:inherit;">
+        <button class="mod-btn mod-btn-yellow" onclick="modViewWarns()">Ver Warns</button>
+      </div>
+      <div id="mod-warns-result" style="margin-top:1rem;"></div>
+    </div>
+
+    <div class="mod-card">
+      <h3 style="margin-bottom:1rem;">Edit XP / Level</h3>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+        <input type="text" id="mod-xp-id" placeholder="ID do Discord" style="width:180px;padding:0.7rem 1rem;border-radius:10px;border:1px solid var(--border2);background:rgba(10,7,20,0.6);color:white;font-size:0.85rem;font-family:inherit;">
+        <input type="text" id="mod-xp-guild" placeholder="Guild ID" style="width:180px;padding:0.7rem 1rem;border-radius:10px;border:1px solid var(--border2);background:rgba(10,7,20,0.6);color:white;font-size:0.85rem;font-family:inherit;">
+        <input type="number" id="mod-xp-value" placeholder="XP" style="width:120px;padding:0.7rem 1rem;border-radius:10px;border:1px solid var(--border2);background:rgba(10,7,20,0.6);color:white;font-size:0.85rem;font-family:inherit;">
+      </div>
+      <div style="display:flex;gap:0.5rem;">
+        <button class="mod-btn mod-btn-purple" onclick="modSetXP()">Definir XP</button>
+      </div>
+    </div>
+
+    <div class="mod-card">
+      <h3 style="margin-bottom:1rem;">Investimentos</h3>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <input type="text" id="mod-inv-id" placeholder="ID do Discord" style="width:200px;padding:0.7rem 1rem;border-radius:10px;border:1px solid var(--border2);background:rgba(10,7,20,0.6);color:white;font-size:0.85rem;font-family:inherit;">
+        <button class="mod-btn mod-btn-primary" onclick="modViewInvestments()">Ver Investimentos</button>
+      </div>
+      <div id="mod-inv-result" style="margin-top:1rem;"></div>
+    </div>
+
+    <div class="mod-card">
+      <h3 style="margin-bottom:1rem;">Conquistas</h3>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+        <input type="text" id="mod-ach-id" placeholder="ID do Discord" style="width:180px;padding:0.7rem 1rem;border-radius:10px;border:1px solid var(--border2);background:rgba(10,7,20,0.6);color:white;font-size:0.85rem;font-family:inherit;">
+        <input type="text" id="mod-ach-key" placeholder="Chave da conquista" style="width:180px;padding:0.7rem 1rem;border-radius:10px;border:1px solid var(--border2);background:rgba(10,7,20,0.6);color:white;font-size:0.85rem;font-family:inherit;">
+      </div>
+      <div style="display:flex;gap:0.5rem;">
+        <button class="mod-btn mod-btn-green" onclick="modAddAchievement()">Adicionar</button>
+        <button class="mod-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:white;" onclick="modRemoveAchievement()">Remover</button>
+      </div>
+    </div>
+
+    <div class="mod-card">
+      <h3 style="margin-bottom:1rem;">Reset Profile</h3>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <input type="text" id="mod-reset-prof-id" placeholder="ID do Discord" style="width:200px;padding:0.7rem 1rem;border-radius:10px;border:1px solid var(--border2);background:rgba(10,7,20,0.6);color:white;font-size:0.85rem;font-family:inherit;">
+        <button class="mod-btn" style="background:linear-gradient(135deg,#f97316,#ea580c);color:white;" onclick="modResetProfile()">Resetar Profile</button>
+      </div>
+    </div>
+
+    <div class="mod-card">
+      <h3 style="margin-bottom:1rem;">Ver Pet</h3>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <input type="text" id="mod-pet-id" placeholder="ID do Discord" style="width:200px;padding:0.7rem 1rem;border-radius:10px;border:1px solid var(--border2);background:rgba(10,7,20,0.6);color:white;font-size:0.85rem;font-family:inherit;">
+        <button class="mod-btn mod-btn-purple" onclick="modViewPet()">Ver Pet</button>
+      </div>
+      <div id="mod-pet-result" style="margin-top:1rem;"></div>
+    </div>
+
+    <div class="mod-card">
+      <h3 style="margin-bottom:1rem;">Servidores</h3>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.8rem;">
+        <button class="mod-btn mod-btn-primary" onclick="modLoadServers()">Carregar Servidores</button>
+      </div>
+      <div id="mod-servers-list"></div>
+    </div>
+
+    <div class="mod-card">
+      <h3 style="margin-bottom:1rem;">Leaderboard Snapshot</h3>
+      <div style="display:flex;gap:0.5rem;margin-bottom:0.8rem;">
+        <button class="mod-btn mod-btn-primary" onclick="modLeaderboard()">Ver Top 10</button>
+      </div>
+      <div id="mod-lb-result"></div>
     </div>
 
     <div class="mod-card">

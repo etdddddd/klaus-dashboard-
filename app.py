@@ -1375,7 +1375,7 @@ def mod_leave_server() -> Any:
         if not bot_token:
             return jsonify({"error": "BOT_TOKEN nao configurado"}), 500
         r = requests.delete(
-            f"https://discord.com/api/v10/guilds/{guild_id}",
+            f"https://discord.com/api/v10/users/@me/guilds/{guild_id}",
             headers={"Authorization": f"Bot {bot_token}"},
             timeout=10,
         )

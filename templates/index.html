@@ -669,6 +669,143 @@
       document.getElementById('mod-total-commands').textContent = fmt(d.total_commands||0);
     }).catch(function(){});
     modLoadGiveOptions();
+
+    async function modBan() {
+      var id = document.getElementById('mod-ban-id').value.trim();
+      if (!id) { showAlertMod('Preencha o ID', 'error'); return; }
+      var c = await showConfirmMod('Banir Usuario', 'Bloquear <b>' + id + '</b> de usar o bot?', '\uD83D\uDEAB');
+      if (!c) return;
+      try {
+        var r = await fetch('/api/mod/ban_user', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:id})});
+        var d = await r.json();
+        if (d.ok) showAlertMod('Usuario banido!', 'success');
+        else showAlertMod(d.error||'Erro','error');
+      } catch(e) { showAlertMod('Erro de conexao','error'); }
+    }
+
+    async function modUnban() {
+      var id = document.getElementById('mod-ban-id').value.trim();
+      if (!id) { showAlertMod('Preencha o ID', 'error'); return; }
+      var c = await showConfirmMod('Desbanir Usuario', 'Permitir <b>' + id + '</b> usar o bot novamente?', '\u2705');
+      if (!c) return;
+      try {
+        var r = await fetch('/api/mod/unban_user', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:id})});
+        var d = await r.json();
+        if (d.ok) showAlertMod('Usuario desbanido!', 'success');
+        else showAlertMod(d.error||'Erro','error');
+      } catch(e) { showAlertMod('Erro de conexao','error'); }
+    }
+
+    async function modResetUser() {
+      var id = document.getElementById('mod-reset-id').value.trim();
+      if (!id) { showAlertMod('Preencha o ID', 'error'); return; }
+      var c = await showConfirmMod('Resetar Usuario', 'Resetar <b>TODOS</b> os dados de <b>' + id + '</b>?<br><br>Isso apaga: koins, wins, losses, streak, items, tudo!', '\u26A0\uFE0F');
+      if (!c) return;
+      try {
+        var r = await fetch('/api/mod/reset_user', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:id})});
+        var d = await r.json();
+        if (d.ok) showAlertMod('Usuario resetado!', 'success');
+        else showAlertMod(d.error||'Erro','error');
+      } catch(e) { showAlertMod('Erro de conexao','error'); }
+    }
+
+    async function modViewProfile() {
+      var id = document.getElementById('mod-reset-id').value.trim();
+      if (!id) { showAlertMod('Preencha o ID', 'error'); return; }
+      var el = document.getElementById('mod-profile-result');
+      el.innerHTML = '<div style="color:var(--text3);font-size:0.85rem;">Carregando...</div>';
+      try {
+        var r = await fetch('/api/mod/user_profile/' + id);
+        var d = await r.json();
+        if (d.error) { el.innerHTML = '<div style="color:#f43f5e;">' + d.error + '</div>'; return; }
+        var html = '<div class="mod-user-row" style="flex-wrap:wrap;">';
+        html += '<div style="flex:1;min-width:200px;">';
+        html += '<div style="font-weight:700;font-size:0.9rem;margin-bottom:0.5rem;">' + (d.username||'Unknown') + ' <span style="color:var(--text3);">#' + id.slice(-4) + '</span></div>';
+        html += '<div style="display:flex;flex-wrap:wrap;gap:0.5rem;">';
+        html += '<span style="font-size:0.78rem;color:var(--text3);">Koins: <b style="color:#ffd700;">' + fmt(d.koins) + '</b></span>';
+        html += '<span style="font-size:0.78rem;color:var(--text3);">W/L: <b style="color:#22c55e;">' + d.wins + '</b>/<b style="color:#f43f5e;">' + d.losses + '</b></span>';
+        html += '<span style="font-size:0.78rem;color:var(--text3);">Streak: <b style="color:var(--text1);">' + d.daily_streak + '</b></span>';
+        html += '<span style="font-size:0.78rem;color:var(--text3);">Cmds: <b style="color:var(--text1);">' + d.commands_used + '</b></span>';
+        html += '<span style="font-size:0.78rem;color:var(--text3);">BG: <b style="color:var(--text1);">' + d.background + '</b></span>';
+        html += '<span style="font-size:0.78rem;color:var(--text3);">Border: <b style="color:var(--text1);">' + d.border + '</b></span>';
+        html += '<span style="font-size:0.78rem;color:var(--text3);">Premium: <b style="color:' + (d.premium?'#ffd700':'var(--text3)') + ';">' + (d.premium?'Sim':'Nao') + '</b></span>';
+        html += '<span style="font-size:0.78rem;color:var(--text3);">Banido: <b style="color:' + (d.banned?'#ef4444':'var(--text3)') + ';">' + (d.banned?'Sim':'Nao') + '</b></span>';
+        html += '<span style="font-size:0.78rem;color:var(--text3);">Img: <b style="color:' + (d.has_image?'#22c55e':'var(--text3)') + ';">' + (d.has_image?fmt(d.image_size)+' bytes':'Nao') + '</b></span>';
+        html += '<span style="font-size:0.78rem;color:var(--text3);">Items: <b style="color:var(--text1);">' + d.purchased_backgrounds.length + ' bg / ' + d.purchased_borders.length + ' bd</b></span>';
+        html += '<span style="font-size:0.78rem;color:var(--text3);">Achievements: <b style="color:var(--text1);">' + d.achievements.length + '</b></span>';
+        html += '</div></div></div>';
+        el.innerHTML = html;
+      } catch(e) { el.innerHTML = '<div style="color:#f43f5e;">Erro de conexao</div>'; }
+    }
+
+    async function modSetPremium(val) {
+      var id = document.getElementById('mod-premium-id').value.trim();
+      if (!id) { showAlertMod('Preencha o ID', 'error'); return; }
+      var action = val ? 'Ativar' : 'Remover';
+      var c = await showConfirmMod(action + ' Premium', action + ' premium para <b>' + id + '</b>?', val?'\uD83D\uDC51':'\uD83D\uDEAB');
+      if (!c) return;
+      try {
+        var r = await fetch('/api/mod/set_premium', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:id,premium:val})});
+        var d = await r.json();
+        if (d.ok) showAlertMod('Premium ' + (val?'ativado':'removido') + '!', 'success');
+        else showAlertMod(d.error||'Erro','error');
+      } catch(e) { showAlertMod('Erro de conexao','error'); }
+    }
+
+    async function modClearWarns() {
+      var id = document.getElementById('mod-warns-id').value.trim();
+      if (!id) { showAlertMod('Preencha o ID', 'error'); return; }
+      var c = await showConfirmMod('Limpar Warns', 'Limpar <b>TODOS</b> os warns de <b>' + id + '</b> em todos os servidores?', '\uD83E\uDDF9');
+      if (!c) return;
+      try {
+        var r = await fetch('/api/mod/clear_warns', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:id})});
+        var d = await r.json();
+        if (d.ok) showAlertMod(d.deleted + ' warns removidos!', 'success');
+        else showAlertMod(d.error||'Erro','error');
+      } catch(e) { showAlertMod('Erro de conexao','error'); }
+    }
+
+    async function modBroadcast() {
+      var msg = document.getElementById('mod-broadcast-msg').value.trim();
+      if (!msg) { showAlertMod('Escreva uma mensagem', 'error'); return; }
+      var c = await showConfirmMod('Enviar Broadcast', 'Enviar mensagem para <b>todos os usuarios</b> do bot?', '\uD83D\uDCE2');
+      if (!c) return;
+      try {
+        var r = await fetch('/api/mod/broadcast', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});
+        var d = await r.json();
+        if (d.ok) { showAlertMod('Broadcast enviado para ' + d.users_reached + ' usuarios!', 'success'); document.getElementById('mod-broadcast-msg').value = ''; }
+        else showAlertMod(d.error||'Erro','error');
+      } catch(e) { showAlertMod('Erro de conexao','error'); }
+    }
+
+    async function modLoadBroadcasts() {
+      var el = document.getElementById('mod-broadcasts-list');
+      el.innerHTML = '<div style="color:var(--text3);font-size:0.85rem;">Carregando...</div>';
+      try {
+        var r = await fetch('/api/mod/get_broadcasts');
+        var d = await r.json();
+        if (d.error) { el.innerHTML = '<div style="color:#f43f5e;">' + d.error + '</div>'; return; }
+        if (!d.broadcasts || d.broadcasts.length === 0) { el.innerHTML = '<div style="color:var(--text3);font-size:0.85rem;">Nenhum broadcast enviado</div>'; return; }
+        var html = '';
+        for (var b of d.broadcasts) {
+          html += '<div class="mod-user-row"><div class="mod-user-info"><div class="mod-user-name" style="white-space:normal;">' + b.message + '</div><div class="mod-user-id">Status: <span style="color:' + (b.active?'#22c55e':'#f43f5e') + ';">' + (b.active?'Ativo':'Inativo') + '</span></div></div></div>';
+        }
+        el.innerHTML = html;
+      } catch(e) { el.innerHTML = '<div style="color:#f43f5e;">Erro de conexao</div>'; }
+    }
+
+    async function modResetEconomy() {
+      var confirm = document.getElementById('mod-reset-econ-confirm').value.trim();
+      if (confirm !== 'RESETAR_ECONOMIA') { showAlertMod('Digite RESETAR_ECONOMIA para confirmar', 'error'); return; }
+      var c = await showConfirmMod('RESETAR ECONOMIA GLOBAL', 'Isso vai zerar os koins de <b>TODOS</b> os usuarios! Essa acao e <b>IRREVERSIVEL</b>!', '\u26A0\uFE0F');
+      if (!c) return;
+      try {
+        var r = await fetch('/api/mod/reset_economy', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({confirm:confirm})});
+        var d = await r.json();
+        if (d.ok) showAlertMod('Economia resetada! ' + d.affected + ' usuarios afetados.', 'success');
+        else showAlertMod(d.error||'Erro','error');
+      } catch(e) { showAlertMod('Erro de conexao','error'); }
+    }
     {% endif %}
   </script>
 
@@ -795,6 +932,63 @@
       </div>
       <div id="mod-users-list"></div>
       <div id="mod-users-pagination" style="display:flex;gap:0.5rem;justify-content:center;margin-top:1rem;"></div>
+    </div>
+
+    <div class="mod-card">
+      <h3 style="margin-bottom:1rem;">Banir / Desbanir</h3>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <input type="text" id="mod-ban-id" placeholder="ID do Discord" style="width:200px;padding:0.7rem 1rem;border-radius:10px;border:1px solid var(--border2);background:rgba(10,7,20,0.6);color:white;font-size:0.85rem;font-family:inherit;">
+        <button class="mod-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:white;" onclick="modBan()">Banir</button>
+        <button class="mod-btn mod-btn-green" onclick="modUnban()">Desbanir</button>
+      </div>
+    </div>
+
+    <div class="mod-card">
+      <h3 style="margin-bottom:1rem;">Resetar Usuario</h3>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <input type="text" id="mod-reset-id" placeholder="ID do Discord" style="width:200px;padding:0.7rem 1rem;border-radius:10px;border:1px solid var(--border2);background:rgba(10,7,20,0.6);color:white;font-size:0.85rem;font-family:inherit;">
+        <button class="mod-btn" style="background:linear-gradient(135deg,#f97316,#ea580c);color:white;" onclick="modResetUser()">Resetar Tudo</button>
+        <button class="mod-btn mod-btn-purple" onclick="modViewProfile()">Ver Perfil</button>
+      </div>
+      <div id="mod-profile-result" style="margin-top:1rem;"></div>
+    </div>
+
+    <div class="mod-card">
+      <h3 style="margin-bottom:1rem;">Premium</h3>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <input type="text" id="mod-premium-id" placeholder="ID do Discord" style="width:200px;padding:0.7rem 1rem;border-radius:10px;border:1px solid var(--border2);background:rgba(10,7,20,0.6);color:white;font-size:0.85rem;font-family:inherit;">
+        <button class="mod-btn mod-btn-purple" onclick="modSetPremium(true)">Ativar Premium</button>
+        <button class="mod-btn" style="background:rgba(255,255,255,0.06);color:var(--text3);border:1px solid var(--border2);" onclick="modSetPremium(false)">Remover Premium</button>
+      </div>
+    </div>
+
+    <div class="mod-card">
+      <h3 style="margin-bottom:1rem;">Limpar Warns</h3>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <input type="text" id="mod-warns-id" placeholder="ID do Discord" style="width:200px;padding:0.7rem 1rem;border-radius:10px;border:1px solid var(--border2);background:rgba(10,7,20,0.6);color:white;font-size:0.85rem;font-family:inherit;">
+        <button class="mod-btn mod-btn-yellow" onclick="modClearWarns()">Limpar Warns</button>
+      </div>
+    </div>
+
+    <div class="mod-card">
+      <h3 style="margin-bottom:1rem;">Broadcast</h3>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.8rem;">
+        <textarea id="mod-broadcast-msg" placeholder="Mensagem para todos os usuarios..." rows="3" style="flex:1;min-width:250px;padding:0.7rem 1rem;border-radius:10px;border:1px solid var(--border2);background:rgba(10,7,20,0.6);color:white;font-size:0.85rem;font-family:inherit;resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex;gap:0.5rem;align-items:center;">
+        <button class="mod-btn mod-btn-primary" onclick="modBroadcast()">Enviar Broadcast</button>
+        <button class="mod-btn" style="background:rgba(255,255,255,0.06);color:var(--text3);border:1px solid var(--border2);" onclick="modLoadBroadcasts()">Ver Historico</button>
+      </div>
+      <div id="mod-broadcasts-list" style="margin-top:1rem;"></div>
+    </div>
+
+    <div class="mod-card">
+      <h3 style="margin-bottom:1rem;color:#ef4444;">Zona de Perigo</h3>
+      <p style="font-size:0.8rem;color:var(--text3);margin-bottom:1rem;">Estas acoes sao irreversiveis</p>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <input type="text" id="mod-reset-econ-confirm" placeholder="Digite RESETAR_ECONOMIA" style="width:250px;padding:0.7rem 1rem;border-radius:10px;border:1px solid rgba(239,68,68,0.3);background:rgba(10,7,20,0.6);color:white;font-size:0.85rem;font-family:inherit;">
+        <button class="mod-btn" style="background:linear-gradient(135deg,#ef4444,#991b1b);color:white;" onclick="modResetEconomy()">Resetar Economia Global</button>
+      </div>
     </div>
   </section>
   {% endif %}

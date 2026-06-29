@@ -999,3 +999,184 @@ def mod_users() -> Any:
         return jsonify({"users": users, "total": total, "page": page, "pages": pages})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/ban_user", methods=["POST"])
+@mod_required
+def mod_ban_user() -> Any:
+    try:
+        db = get_db()
+        data = request.get_json(force=True)
+        user_id = data.get("user_id", "").strip()
+        if not user_id or not user_id.isdigit():
+            return jsonify({"error": "ID invalido"}), 400
+        db["usuarios"].update_one(
+            {"discord_id": int(user_id)},
+            {"$set": {"bot_banned": True}},
+            upsert=True,
+        )
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/unban_user", methods=["POST"])
+@mod_required
+def mod_unban_user() -> Any:
+    try:
+        db = get_db()
+        data = request.get_json(force=True)
+        user_id = data.get("user_id", "").strip()
+        if not user_id or not user_id.isdigit():
+            return jsonify({"error": "ID invalido"}), 400
+        db["usuarios"].update_one(
+            {"discord_id": int(user_id)},
+            {"$unset": {"bot_banned": ""}},
+        )
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/reset_user", methods=["POST"])
+@mod_required
+def mod_reset_user() -> Any:
+    try:
+        db = get_db()
+        data = request.get_json(force=True)
+        user_id = data.get("user_id", "").strip()
+        if not user_id or not user_id.isdigit():
+            return jsonify({"error": "ID invalido"}), 400
+        db["usuarios"].update_one(
+            {"discord_id": int(user_id)},
+            {"$set": {
+                "koins": 0, "wins": 0, "losses": 0, "profit": 0,
+                "total_earned": 0, "total_lost": 0, "daily_streak": 0,
+                "daily_claims": 0, "commands_used": 0, "mines": 0,
+                "achievements": [], "purchased_backgrounds": ["padrao"],
+                "purchased_borders": ["default"], "profile_background": "padrao",
+                "profile_border": "default",
+            }},
+        )
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/broadcast", methods=["POST"])
+@mod_required
+def mod_broadcast() -> Any:
+    try:
+        db = get_db()
+        data = request.get_json(force=True)
+        message = data.get("message", "").strip()
+        if not message:
+            return jsonify({"error": "mensagem vazia"}), 400
+        db["broadcasts"].insert_one({
+            "message": message,
+            "from": "owner",
+            "active": True,
+        })
+        count = db["usuarios"].count_documents({})
+        return jsonify({"ok": True, "users_reached": count})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/get_broadcasts")
+@mod_required
+def mod_get_broadcasts() -> Any:
+    try:
+        db = get_db()
+        broadcasts = list(db["broadcasts"].find().sort("_id", -1).limit(20))
+        result = []
+        for b in broadcasts:
+            result.append({
+                "message": b.get("message", ""),
+                "active": b.get("active", True),
+                "id": str(b.get("_id", "")),
+            })
+        return jsonify({"broadcasts": result})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/set_premium", methods=["POST"])
+@mod_required
+def mod_set_premium() -> Any:
+    try:
+        db = get_db()
+        data = request.get_json(force=True)
+        user_id = data.get("user_id", "").strip()
+        premium = data.get("premium", True)
+        if not user_id or not user_id.isdigit():
+            return jsonify({"error": "ID invalido"}), 400
+        db["usuarios"].update_one(
+            {"discord_id": int(user_id)},
+            {"$set": {"premium": bool(premium)}},
+            upsert=True,
+        )
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/clear_warns", methods=["POST"])
+@mod_required
+def mod_clear_warns() -> Any:
+    try:
+        db = get_db()
+        data = request.get_json(force=True)
+        user_id = data.get("user_id", "").strip()
+        if not user_id or not user_id.isdigit():
+            return jsonify({"error": "ID invalido"}), 400
+        result = db["warns"].delete_many({"user_id": int(user_id)})
+        return jsonify({"ok": True, "deleted": result.deleted_count})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/reset_economy", methods=["POST"])
+@mod_required
+def mod_reset_economy() -> Any:
+    try:
+        db = get_db()
+        data = request.get_json(force=True)
+        confirm = data.get("confirm", "")
+        if confirm != "RESETAR_ECONOMIA":
+            return jsonify({"error": "Digite RESETAR_ECONOMIA para confirmar"}), 400
+        result = db["usuarios"].update_many({}, {"$set": {"koins": 0}})
+        return jsonify({"ok": True, "affected": result.modified_count})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mod/user_profile/<user_id>")
+@mod_required
+def mod_user_profile(user_id: str) -> Any:
+    try:
+        db = get_db()
+        doc = db["usuarios"].find_one({"discord_id": int(user_id)})
+        if not doc:
+            return jsonify({"error": "usuario nao encontrado"})
+        img_b64 = doc.get("profile_image_b64", "")
+        return jsonify({
+            "has_image": bool(img_b64),
+            "image_b64": img_b64[:100] + "..." if len(img_b64) > 100 else img_b64,
+            "image_size": len(img_b64),
+            "background": doc.get("profile_background", "padrao"),
+            "border": doc.get("profile_border", "default"),
+            "username": doc.get("username", "Unknown"),
+            "koins": doc.get("koins", 0),
+            "wins": doc.get("wins", 0),
+            "losses": doc.get("losses", 0),
+            "daily_streak": doc.get("daily_streak", 0),
+            "commands_used": doc.get("commands_used", 0),
+            "achievements": doc.get("achievements", []),
+            "purchased_backgrounds": doc.get("purchased_backgrounds", []),
+            "purchased_borders": doc.get("purchased_borders", []),
+            "premium": doc.get("premium", False),
+            "banned": doc.get("bot_banned", False),
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

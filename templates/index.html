@@ -20,7 +20,23 @@
       <span class="brand-icon">💜</span>
       <span class="brand-text">KLAUS</span>
     </a>
-    <div class="nav-links">
+    <button class="hamburger" id="hamburger-btn" onclick="document.getElementById('mobile-menu').classList.toggle('open');this.classList.toggle('active')">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="#features" onclick="this.parentElement.classList.remove('open')">Recursos</a>
+      <a href="#commands" onclick="this.parentElement.classList.remove('open')">Comandos</a>
+      <a href="/status">Status</a>
+      <a href="/leaderboard">Leaderboard</a>
+      <a href="/profile">Perfil</a>
+      <a href="#faq" onclick="this.parentElement.classList.remove('open')">FAQ</a>
+      {% if user %}
+        <a href="/dashboard" class="btn btn-primary">Dashboard</a>
+      {% else %}
+        <a href="/login" class="btn btn-discord">Entrar com Discord</a>
+      {% endif %}
+    </div>
+    <div class="nav-links" id="nav-links">
       <a href="#features" class="nav-link">Recursos</a>
       <a href="#commands" class="nav-link">Comandos</a>
       <a href="/status" class="nav-link">Status</a>
@@ -189,6 +205,31 @@
           <span class="tag">Economia</span>
           <span class="tag">Cores</span>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">Como Funciona</span>
+      <h2>Comece em 3 passos</h2>
+      <p>Simples, rápido e poderoso</p>
+    </div>
+    <div class="how-it-works">
+      <div class="how-step">
+        <div class="how-step-num">1</div>
+        <h3>Adicione o Bot</h3>
+        <p>Clique em "Entrar com Discord" e autorize o Klaus no seu servidor. Leva 10 segundos!</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">2</div>
+        <h3>Configure Tudo</h3>
+        <p>Acesse o Dashboard para ativar boas-vindas, auto cargo, logs, XP e mais pelo site!</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">3</div>
+        <h3>Curta o Bot</h3>
+        <p>Use /daily, /apostar, /minerar e dezenas de comandos. Ganhe koins, suba de level e compete!</p>
       </div>
     </div>
   </div>
@@ -383,6 +424,12 @@
       resize();
       window.addEventListener('resize', resize);
 
+      const colors = [
+        [139, 92, 246],
+        [217, 70, 239],
+        [59, 130, 246],
+        [244, 63, 94],
+      ];
       class Particle {
         constructor() {
           this.x = Math.random() * w;
@@ -393,6 +440,7 @@
           this.alpha = Math.random() * 0.25 + 0.05;
           this.pulse = Math.random() * Math.PI * 2;
           this.pulseSpeed = Math.random() * 0.02 + 0.005;
+          this.color = colors[Math.floor(Math.random() * colors.length)];
         }
         update() {
           this.x += this.vx;
@@ -405,12 +453,12 @@
           const a = this.alpha + Math.sin(this.pulse) * 0.08;
           ctx.beginPath();
           ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(139, 92, 246, ${a})`;
+          ctx.fillStyle = `rgba(${this.color[0]}, ${this.color[1]}, ${this.color[2]}, ${a})`;
           ctx.fill();
         }
       }
 
-      for (let i = 0; i < 70; i++) particles.push(new Particle());
+      for (let i = 0; i < 80; i++) particles.push(new Particle());
 
       function animate() {
         ctx.clearRect(0, 0, w, h);
@@ -451,7 +499,7 @@
       });
     }, { threshold: 0.1 });
 
-    document.querySelectorAll('.feature-card, .command-category, .stat-item, .faq-item, .guild-card').forEach(el => {
+    document.querySelectorAll('.feature-card, .command-category, .stat-item, .faq-item, .guild-card, .how-step').forEach(el => {
       observer.observe(el);
     });
 

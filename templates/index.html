@@ -5,12 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Klaus Bot — O Bot Mais Completo do Discord</title>
   <meta name="description" content="Klaus Bot: Economia, Moderação, Diversão, XP System e Dashboard Web. O bot mais completo para seu servidor Discord.">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=30">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=31">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    .consent-overlay{position:fixed;inset:0;z-index:99999;background:rgba(5,3,11,0.92);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .4s}
+    .consent-overlay.hidden{opacity:0;pointer-events:none}
+    .consent-box{background:linear-gradient(145deg,rgba(20,14,40,0.95),rgba(10,7,20,0.98));border:1px solid rgba(139,92,246,0.25);border-radius:20px;padding:2.5rem;max-width:500px;width:90%;text-align:center;box-shadow:0 0 80px rgba(139,92,246,0.15)}
+    .consent-box h2{font-size:1.5rem;font-weight:700;background:linear-gradient(135deg,#8b5cf6,#d946ef);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem}
+    .consent-box p{color:#a8a3b5;font-size:.9rem;line-height:1.6;margin-bottom:1.5rem}
+    .consent-box a{color:#8b5cf6;text-decoration:none;font-weight:600}
+    .consent-box a:hover{text-decoration:underline}
+    .consent-checkboxes{text-align:left;margin-bottom:1.5rem}
+    .consent-checkboxes label{display:flex;align-items:flex-start;gap:.6rem;color:#c4c0cc;font-size:.85rem;margin-bottom:.8rem;cursor:pointer;line-height:1.4}
+    .consent-checkboxes input[type=checkbox]{width:18px;height:18px;accent-color:#8b5cf6;margin-top:2px;flex-shrink:0}
+    .consent-btns{display:flex;gap:.8rem;justify-content:center}
+    .consent-btn-accept{padding:.8rem 2rem;border-radius:12px;border:none;font-weight:700;font-size:.95rem;cursor:pointer;background:linear-gradient(135deg,#8b5cf6,#a855f7);color:white;transition:all .2s}
+    .consent-btn-accept:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(139,92,246,0.4)}
+    .consent-btn-accept:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+    .consent-btn-decline{padding:.8rem 1.5rem;border-radius:12px;border:1px solid rgba(139,92,246,0.3);background:transparent;color:#8b5cf6;font-weight:600;font-size:.9rem;cursor:pointer;transition:all .2s}
+    .consent-btn-decline:hover{background:rgba(139,92,246,0.1)}
+    .lang-toggle{display:flex;align-items:center;gap:4px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:.8rem;color:#c4c0cc;transition:all .2s}
+    .lang-toggle:hover{background:rgba(139,92,264,0.2);border-color:rgba(139,92,246,0.4)}
+    .lang-toggle span{font-weight:600;color:#8b5cf6}
+  </style>
 </head>
 <body>
   <noscript><style>.feature-card,.stat-item,.command-category,.faq-item,.guild-card,.how-step{opacity:1!important;transform:none!important;}</style></noscript>
+
+  <!-- CONSENT MODAL -->
+  <div class="consent-overlay" id="consent-overlay">
+    <div class="consent-box">
+      <h2>💜 Bem-vindo ao Klaus</h2>
+      <p>Antes de continuar, precisamos da sua autorização para uso de cookies e dados conforme nossas políticas.</p>
+      <div class="consent-checkboxes">
+        <label><input type="checkbox" id="consent-terms" onchange="checkConsentBtn()"> Li e aceito os <a href="/terms" target="_blank">Termos de Serviço</a></label>
+        <label><input type="checkbox" id="consent-privacy" onchange="checkConsentBtn()"> Li e aceito a <a href="/privacy" target="_blank">Política de Privacidade</a></label>
+        <label><input type="checkbox" id="consent-cookies" onchange="checkConsentBtn()"> Aceito o uso de cookies essenciais para autenticação</label>
+      </div>
+      <div class="consent-btns">
+        <button class="consent-btn-accept" id="consent-accept-btn" disabled onclick="acceptConsent()">Continuar</button>
+        <button class="consent-btn-decline" onclick="declineConsent()">Sair</button>
+      </div>
+    </div>
+  </div>
   <div class="aurora"></div>
   <canvas id="particles-canvas"></canvas>
   <div class="bg-glow"></div>
@@ -26,94 +64,98 @@
       <span></span><span></span><span></span>
     </button>
     <div class="mobile-menu" id="mobile-menu">
-      <a href="#features" onclick="this.parentElement.classList.remove('open')">Recursos</a>
-      <a href="#commands" onclick="this.parentElement.classList.remove('open')">Comandos</a>
-      <a href="/status">Status</a>
-      <a href="/leaderboard">Leaderboard</a>
-      <a href="/profile">Perfil</a>
-      <a href="#faq" onclick="this.parentElement.classList.remove('open')">FAQ</a>
+      <a href="#features" onclick="this.parentElement.classList.remove('open')" data-i18n="nav_features">Recursos</a>
+      <a href="#commands" onclick="this.parentElement.classList.remove('open')" data-i18n="nav_commands">Comandos</a>
+      <a href="/status" data-i18n="nav_status">Status</a>
+      <a href="/leaderboard" data-i18n="nav_leaderboard">Leaderboard</a>
+      <a href="/profile" data-i18n="nav_profile">Perfil</a>
+      <a href="#faq" onclick="this.parentElement.classList.remove('open')" data-i18n="nav_faq">FAQ</a>
       {% if user %}
-        <a href="/dashboard" class="btn btn-primary">Dashboard</a>
+        <a href="/dashboard" class="btn btn-primary" data-i18n="nav_dashboard">Dashboard</a>
       {% else %}
-        <a href="/login" class="btn btn-discord">Entrar com Discord</a>
+        <a href="/login" class="btn btn-discord" data-i18n="nav_login">Entrar com Discord</a>
       {% endif %}
     </div>
     <div class="nav-links" id="nav-links">
-      <a href="#features" class="nav-link">Recursos</a>
-      <a href="#commands" class="nav-link">Comandos</a>
-      <a href="/status" class="nav-link">Status</a>
-      <a href="/leaderboard" class="nav-link">Leaderboard</a>
-      <a href="/profile" class="nav-link">Perfil</a>
-      <a href="#faq" class="nav-link">FAQ</a>
+      <a href="#features" class="nav-link" data-i18n="nav_features">Recursos</a>
+      <a href="#commands" class="nav-link" data-i18n="nav_commands">Comandos</a>
+      <a href="/status" class="nav-link" data-i18n="nav_status">Status</a>
+      <a href="/leaderboard" class="nav-link" data-i18n="nav_leaderboard">Leaderboard</a>
+      <a href="/profile" class="nav-link" data-i18n="nav_profile">Perfil</a>
+      <a href="#faq" class="nav-link" data-i18n="nav_faq">FAQ</a>
+      <div class="lang-toggle" onclick="toggleLang()" title="Mudar idioma">
+        <span id="lang-flag">🇧🇷</span>
+        <span id="lang-code">PT</span>
+      </div>
       {% if user %}
-        <a href="/dashboard" class="btn btn-primary btn-sm">Dashboard</a>
+        <a href="/dashboard" class="btn btn-primary btn-sm" data-i18n="nav_dashboard">Dashboard</a>
         {% if user.id == '1230185414808047666' %}
           <a href="#mod-panel" class="btn btn-sm" style="background:linear-gradient(135deg,#f43f5e,#ec4899);color:white;font-weight:700;">Mod</a>
         {% endif %}
       {% else %}
         <a href="/login" class="btn btn-discord btn-sm">
           <svg width="20" height="15" viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:6px"><path d="M60.1 4.9A58.5 58.5 0 0 0 45.4.2a.2.2 0 0 0-.2.1 40.8 40.8 0 0 0-1.8 3.7 54 54 0 0 0-16.2 0A27 27 0 0 0 25.4.3a.2.2 0 0 0-.2-.1A58.4 58.4 0 0 0 10.5 4.9a.2.2 0 0 0-.1.1C3.7 15.1 1.8 25.1 2.7 35a.2.2 0 0 0 .1.1 58.7 58.7 0 0 0 17.7 9 .2.2 0 0 0 .2-.1 42 42 0 0 0 3.6-5.9.2.2 0 0 0-.1-.3 38.7 38.7 0 0 1-5.5-2.6.2.2 0 0 1 0-.4c.4-.3.7-.6 1.1-.9a.2.2 0 0 1 .2 0c11.5 5.3 24 5.3 35.4 0a.2.2 0 0 1 .2 0l1.1.9a.2.2 0 0 1 0 .4c-1.8 1-3.6 1.8-5.5 2.6a.2.2 0 0 0-.1.3 47.2 47.2 0 0 0 3.7 5.9.2.2 0 0 0 .2.1 58.5 58.5 0 0 0 17.7-9 .2.2 0 0 0 .1-.1c1.1-11.4-.6-21.3-4.7-30a.2.2 0 0 0-.1-.1zM23.7 29c-3.5 0-6.4-3.2-6.4-7.1s2.8-7.1 6.4-7.1 6.5 3.2 6.4 7.1-2.8 7.1-6.4 7.1zm23.6 0c-3.5 0-6.4-3.2-6.4-7.1s2.8-7.1 6.4-7.1 6.5 3.2 6.4 7.1-2.8 7.1-6.4 7.1z" fill="white"/></svg>
-          Entrar
+          <span data-i18n="nav_enter">Entrar</span>
         </a>
       {% endif %}
     </div>
   </nav>
 
   <section class="hero">
-    <div class="hero-badge">✨ O Bot Mais Completo do Discord</div>
+    <div class="hero-badge" data-i18n="hero_badge">✨ O Bot Mais Completo do Discord</div>
     <h1>
-      <span class="hero-line">Olá, eu sou o</span>
+      <span class="hero-line" data-i18n="hero_hello">Olá, eu sou o</span>
       <span class="hero-name">Klaus</span>
-      <span class="hero-line hero-sub">Economia, Moderação, Diversão e muito mais!</span>
+      <span class="hero-line hero-sub" data-i18n="hero_sub">Economia, Moderação, Diversão e muito mais!</span>
     </h1>
     <div class="hero-buttons">
       {% if user %}
-        <a href="/dashboard" class="btn btn-primary btn-lg">Meu Dashboard →</a>
+        <a href="/dashboard" class="btn btn-primary btn-lg" data-i18n="hero_dashboard">Meu Dashboard →</a>
       {% else %}
-        <a href="/login" class="btn btn-discord btn-lg">Começar Agora</a>
+        <a href="/login" class="btn btn-discord btn-lg" data-i18n="hero_start">Começar Agora</a>
       {% endif %}
-      <a href="#features" class="btn btn-ghost btn-lg">Ver Recursos ↓</a>
+      <a href="#features" class="btn btn-ghost btn-lg" data-i18n="hero_features">Ver Recursos ↓</a>
     </div>
     <div class="live-status">
       <span class="live-dot"></span>
-      Online agora — 24/7
+      <span data-i18n="hero_online">Online agora — 24/7</span>
     </div>
   </section>
 
   <section class="stats-bar" id="stats">
     <div class="stat-item">
       <span class="stat-number" data-count="94">0</span>
-      <span class="stat-label">Comandos</span>
+      <span class="stat-label" data-i18n="stat_commands">Comandos</span>
     </div>
     <div class="stat-divider"></div>
     <div class="stat-item">
       <span class="stat-number" data-api="total_users" data-suffix="+">0</span>
-      <span class="stat-label">Usuários</span>
+      <span class="stat-label" data-i18n="stat_users">Usuários</span>
     </div>
     <div class="stat-divider"></div>
     <div class="stat-item">
       <span class="stat-number" data-api="total_koins" data-suffix="">0</span>
-      <span class="stat-label">Koins Circulantes</span>
+      <span class="stat-label" data-i18n="stat_koins">Koins Circulantes</span>
     </div>
     <div class="stat-divider"></div>
     <div class="stat-item">
       <span class="stat-number" data-count="99" data-suffix=".9%">0</span>
-      <span class="stat-label">Uptime</span>
+      <span class="stat-label" data-i18n="stat_uptime">Uptime</span>
     </div>
   </section>
 
   <div class="container" id="features">
     <div class="section-header">
-      <span class="section-badge">Recursos</span>
-      <h2>Tudo que você precisa</h2>
-      <p>O bot mais completo e poderoso para o seu servidor Discord</p>
+      <span class="section-badge" data-i18n="features_badge">Recursos</span>
+      <h2 data-i18n="features_title">Tudo que você precisa</h2>
+      <p data-i18n="features_sub">O bot mais completo e poderoso para o seu servidor Discord</p>
     </div>
 
     <div class="features-grid">
       <div class="feature-card feature-card-large" style="--accent: #8b5cf6">
         <div class="feature-icon">💰</div>
-        <h3>Economia Completa</h3>
-        <p>Diário com streak progressivo, trabalho, mineração, forja, loja interativa, ranking, perfil e muito mais!</p>
+        <h3 data-i18n="feat_economy">Economia Completa</h3>
+        <p data-i18n="feat_economy_desc">Diário com streak progressivo, trabalho, mineração, forja, loja interativa, ranking, perfil e muito mais!</p>
         <div class="feature-tags">
           <span class="tag">/daily</span>
           <span class="tag">/trabalhar</span>
@@ -126,8 +168,8 @@
 
       <div class="feature-card" style="--accent: #d946ef">
         <div class="feature-icon">🎰</div>
-        <h3>Cassino</h3>
-        <p>Roleta com botões, Coinflip, Dados, Blackjack, Loteria e Cases Gacha!</p>
+        <h3 data-i18n="feat_casino">Cassino</h3>
+        <p data-i18n="feat_casino_desc">Roleta com botões, Coinflip, Dados, Blackjack, Loteria e Cases Gacha!</p>
         <div class="feature-tags">
           <span class="tag">/apostar</span>
           <span class="tag">/blackjack</span>
@@ -138,8 +180,8 @@
 
       <div class="feature-card" style="--accent: #ec4899">
         <div class="feature-icon">⚔️</div>
-        <h3>PvP & Aventura</h3>
-        <p>Desafie jogadores em duelo, roube koins, cometa crimes e heists!</p>
+        <h3 data-i18n="feat_pvp">PvP & Aventura</h3>
+        <p data-i18n="feat_pvp_desc">Desafie jogadores em duelo, roube koins, cometa crimes e heists!</p>
         <div class="feature-tags">
           <span class="tag">/duel</span>
           <span class="tag">/roubar</span>
@@ -150,8 +192,8 @@
 
       <div class="feature-card" style="--accent: #14b8a6">
         <div class="feature-icon">🏦</div>
-        <h3>Poupança & Investimentos</h3>
-        <p>Deposite no cofre com juros, invista em cripto, ações e imóveis!</p>
+        <h3 data-i18n="feat_savings">Poupança & Investimentos</h3>
+        <p data-i18n="feat_savings_desc">Deposite no cofre com juros, invista em cripto, ações e imóveis!</p>
         <div class="feature-tags">
           <span class="tag">/cofre</span>
           <span class="tag">/invest</span>
@@ -161,8 +203,8 @@
 
       <div class="feature-card" style="--accent: #f97316">
         <div class="feature-icon">🐾</div>
-        <h3>Pets & Desafios</h3>
-        <p>Adote um pet, complete desafios diários e ganhe recompensas!</p>
+        <h3 data-i18n="feat_pets">Pets & Desafios</h3>
+        <p data-i18n="feat_pets_desc">Adote um pet, complete desafios diários e ganhe recompensas!</p>
         <div class="feature-tags">
           <span class="tag">/pet</span>
           <span class="tag">/challenges</span>
@@ -172,8 +214,8 @@
 
       <div class="feature-card" style="--accent: #3b82f6">
         <div class="feature-icon">🎮</div>
-        <h3>Diversão</h3>
-        <p>Truth or Dare com 120+ perguntas, Magic Ball, hug, kiss, ship, batalha, piadas e memes!</p>
+        <h3 data-i18n="feat_fun">Diversão</h3>
+        <p data-i18n="feat_fun_desc">Truth or Dare com 120+ perguntas, Magic Ball, hug, kiss, ship, batalha, piadas e memes!</p>
         <div class="feature-tags">
           <span class="tag">/tod</span>
           <span class="tag">/magic</span>
@@ -184,8 +226,8 @@
 
       <div class="feature-card" style="--accent: #ef4444">
         <div class="feature-icon">🛡️</div>
-        <h3>Moderação & AutoMod</h3>
-        <p>Ban, kick, mute, warn, anti-spam, anti-links e logs automáticos!</p>
+        <h3 data-i18n="feat_mod">Moderação & AutoMod</h3>
+        <p data-i18n="feat_mod_desc">Ban, kick, mute, warn, anti-spam, anti-links e logs automáticos!</p>
         <div class="feature-tags">
           <span class="tag">/ban</span>
           <span class="tag">/automod</span>
@@ -196,8 +238,8 @@
 
       <div class="feature-card feature-card-large" style="--accent: #8b5cf6">
         <div class="feature-icon">⚙️</div>
-        <h3>Dashboard Web</h3>
-        <p>Configure boas-vindas, auto cargo, logs, XP, automod, economia e cores pelo site! Tudo em tempo real.</p>
+        <h3 data-i18n="feat_dashboard">Dashboard Web</h3>
+        <p data-i18n="feat_dashboard_desc">Configure boas-vindas, auto cargo, logs, XP, automod, economia e cores pelo site! Tudo em tempo real.</p>
         <div class="feature-tags">
           <span class="tag">Boas-vindas</span>
           <span class="tag">Auto Cargo</span>
@@ -213,34 +255,34 @@
 
   <div class="container">
     <div class="section-header">
-      <span class="section-badge">Como Funciona</span>
-      <h2>Comece em 3 passos</h2>
-      <p>Simples, rápido e poderoso</p>
+      <span class="section-badge" data-i18n="how_badge">Como Funciona</span>
+      <h2 data-i18n="how_title">Comece em 3 passos</h2>
+      <p data-i18n="how_sub">Simples, rápido e poderoso</p>
     </div>
     <div class="how-it-works">
       <div class="how-step">
         <div class="how-step-num">1</div>
-        <h3>Adicione o Bot</h3>
-        <p>Clique em "Entrar com Discord" e autorize o Klaus no seu servidor. Leva 10 segundos!</p>
+        <h3 data-i18n="how_step1_title">Adicione o Bot</h3>
+        <p data-i18n="how_step1_desc">Clique em "Entrar com Discord" e autorize o Klaus no seu servidor. Leva 10 segundos!</p>
       </div>
       <div class="how-step">
         <div class="how-step-num">2</div>
-        <h3>Configure Tudo</h3>
-        <p>Acesse o Dashboard para ativar boas-vindas, auto cargo, logs, XP e mais pelo site!</p>
+        <h3 data-i18n="how_step2_title">Configure Tudo</h3>
+        <p data-i18n="how_step2_desc">Acesse o Dashboard para ativar boas-vindas, auto cargo, logs, XP e mais pelo site!</p>
       </div>
       <div class="how-step">
         <div class="how-step-num">3</div>
-        <h3>Curta o Bot</h3>
-        <p>Use /daily, /apostar, /minerar e dezenas de comandos. Ganhe koins, suba de level e compete!</p>
+        <h3 data-i18n="how_step3_title">Curta o Bot</h3>
+        <p data-i18n="how_step3_desc">Use /daily, /apostar, /minerar e dezenas de comandos. Ganhe koins, suba de level e compete!</p>
       </div>
     </div>
   </div>
 
   <div class="container" id="commands">
     <div class="section-header">
-      <span class="section-badge">Comandos</span>
-      <h2>94 Comandos Disponíveis</h2>
-      <p>Use / para ver todos os comandos no Discord</p>
+      <span class="section-badge" data-i18n="cmd_badge">Comandos</span>
+      <h2 data-i18n="cmd_title">94 Comandos Disponíveis</h2>
+      <p data-i18n="cmd_sub">Use / para ver todos os comandos no Discord</p>
     </div>
 
     <div class="commands-grid">
@@ -305,9 +347,9 @@
 
   <div class="container" id="faq">
     <div class="section-header">
-      <span class="section-badge">Perguntas</span>
-      <h2>Perguntas Frequentes</h2>
-      <p>Tire suas dúvidas sobre o Klaus Bot</p>
+      <span class="section-badge" data-i18n="faq_badge">Perguntas</span>
+      <h2 data-i18n="faq_title">Perguntas Frequentes</h2>
+      <p data-i18n="faq_sub">Tire suas dúvidas sobre o Klaus Bot</p>
     </div>
 
     <div class="faq-section">
@@ -387,12 +429,12 @@
 
   <section class="cta-section">
     <div class="cta-glow"></div>
-    <h2>Pronto para começar?</h2>
-    <p>Adicione o Klaus ao seu servidor e transforme a experiência!</p>
+    <h2 data-i18n="cta_title">Pronto para começar?</h2>
+    <p data-i18n="cta_sub">Adicione o Klaus ao seu servidor e transforme a experiência!</p>
     {% if user %}
-      <a href="/dashboard" class="btn btn-primary btn-xl">Abrir Dashboard →</a>
+      <a href="/dashboard" class="btn btn-primary btn-xl" data-i18n="cta_dashboard">Abrir Dashboard →</a>
     {% else %}
-      <a href="/login" class="btn btn-discord btn-xl">Adicionar ao Discord</a>
+      <a href="/login" class="btn btn-discord btn-xl" data-i18n="cta_add">Adicionar ao Discord</a>
     {% endif %}
   </section>
 
@@ -402,13 +444,13 @@
         <span class="brand-icon">💜</span>
         <span>KLAUS BOT</span>
       </div>
-      <p>Feito com dedicação para a comunidade Discord</p>
+      <p data-i18n="footer_made">Feito com dedicação para a comunidade Discord</p>
       <div class="footer-links">
-        <a href="https://discord.gg/klaus" target="_blank">Suporte</a>
+        <a href="https://discord.gg/klaus" target="_blank" data-i18n="footer_support">Suporte</a>
         <a href="/dashboard">Dashboard</a>
-        <a href="#commands">Comandos</a>
-        <a href="/terms">Termos de Serviço</a>
-        <a href="/privacy">Privacidade</a>
+        <a href="#commands" data-i18n="nav_commands">Comandos</a>
+        <a href="/terms" data-i18n="footer_terms">Termos de Serviço</a>
+        <a href="/privacy" data-i18n="footer_privacy">Privacidade</a>
       </div>
     </div>
   </footer>
@@ -1347,5 +1389,143 @@
   {% endif %}
 
   <div id="mod-alert-box" style="position:fixed;top:1rem;right:1rem;z-index:10000;"></div>
+
+  <script>
+    // ═══════════════════════════════════════════
+    // CONSENT MODAL
+    // ═══════════════════════════════════════════
+    function checkConsentBtn() {
+      const t = document.getElementById('consent-terms').checked;
+      const p = document.getElementById('consent-privacy').checked;
+      const c = document.getElementById('consent-cookies').checked;
+      document.getElementById('consent-accept-btn').disabled = !(t && p && c);
+    }
+    function acceptConsent() {
+      localStorage.setItem('klaus_consent', 'accepted');
+      localStorage.setItem('klaus_consent_date', new Date().toISOString());
+      document.getElementById('consent-overlay').classList.add('hidden');
+    }
+    function declineConsent() {
+      window.location.href = 'https://google.com';
+    }
+    (function() {
+      if (localStorage.getItem('klaus_consent') === 'accepted') {
+        document.getElementById('consent-overlay').classList.add('hidden');
+      }
+    })();
+
+    // ═══════════════════════════════════════════
+    // LANGUAGE SYSTEM
+    // ═══════════════════════════════════════════
+    const I18N = {
+      pt: {
+        nav_features: "Recursos", nav_commands: "Comandos", nav_status: "Status",
+        nav_leaderboard: "Leaderboard", nav_profile: "Perfil", nav_faq: "FAQ",
+        nav_dashboard: "Dashboard", nav_login: "Entrar com Discord", nav_enter: "Entrar",
+        hero_badge: "✨ O Bot Mais Completo do Discord",
+        hero_hello: "Olá, eu sou o",
+        hero_sub: "Economia, Moderação, Diversão e muito mais!",
+        hero_dashboard: "Meu Dashboard →", hero_start: "Começar Agora",
+        hero_features: "Ver Recursos ↓", hero_online: "Online agora — 24/7",
+        stat_commands: "Comandos", stat_users: "Usuários",
+        stat_koins: "Koins Circulantes", stat_uptime: "Uptime",
+        features_badge: "Recursos", features_title: "Tudo que você precisa",
+        features_sub: "O bot mais completo e poderoso para o seu servidor Discord",
+        feat_economy: "Economia Completa",
+        feat_economy_desc: "Diário com streak progressivo, trabalho, mineração, forja, loja interativa, ranking, perfil e muito mais!",
+        feat_casino: "Cassino",
+        feat_casino_desc: "Roleta com botões, Coinflip, Dados, Blackjack, Loteria e Cases Gacha!",
+        feat_pvp: "PvP & Aventura",
+        feat_pvp_desc: "Desafie jogadores em duelo, roube koins, cometa crimes e heists!",
+        feat_savings: "Poupança & Investimentos",
+        feat_savings_desc: "Deposite no cofre com juros, invista em cripto, ações e imóveis!",
+        feat_pets: "Pets & Desafios",
+        feat_pets_desc: "Adote um pet, complete desafios diários e ganhe recompensas!",
+        feat_fun: "Diversão",
+        feat_fun_desc: "Truth or Dare com 120+ perguntas, Magic Ball, hug, kiss, ship, batalha, piadas e memes!",
+        feat_mod: "Moderação & AutoMod",
+        feat_mod_desc: "Ban, kick, mute, warn, anti-spam, anti-links e logs automáticos!",
+        feat_dashboard: "Dashboard Web",
+        feat_dashboard_desc: "Configure boas-vindas, auto cargo, logs, XP, automod, economia e cores pelo site! Tudo em tempo real.",
+        how_badge: "Como Funciona", how_title: "Comece em 3 passos", how_sub: "Simples, rápido e poderoso",
+        how_step1_title: "Adicione o Bot", how_step1_desc: 'Clique em "Entrar com Discord" e autorize o Klaus no seu servidor. Leva 10 segundos!',
+        how_step2_title: "Configure Tudo", how_step2_desc: "Acesse o Dashboard para ativar boas-vindas, auto cargo, logs, XP e mais pelo site!",
+        how_step3_title: "Curta o Bot", how_step3_desc: "Use /daily, /apostar, /minerar e dezenas de comandos. Ganhe koins, suba de level e compete!",
+        cmd_badge: "Comandos", cmd_title: "94 Comandos Disponíveis",
+        cmd_sub: "Use / para ver todos os comandos no Discord",
+        faq_badge: "Perguntas", faq_title: "Perguntas Frequentes",
+        faq_sub: "Tire suas dúvidas sobre o Klaus Bot",
+        cta_title: "Pronto para começar?",
+        cta_sub: "Adicione o Klaus ao seu servidor e transforme a experiência!",
+        cta_dashboard: "Abrir Dashboard →", cta_add: "Adicionar ao Discord",
+        footer_made: "Feito com dedicação para a comunidade Discord",
+        footer_support: "Suporte", footer_terms: "Termos de Serviço", footer_privacy: "Privacidade"
+      },
+      en: {
+        nav_features: "Features", nav_commands: "Commands", nav_status: "Status",
+        nav_leaderboard: "Leaderboard", nav_profile: "Profile", nav_faq: "FAQ",
+        nav_dashboard: "Dashboard", nav_login: "Login with Discord", nav_enter: "Login",
+        hero_badge: "✨ The Most Complete Discord Bot",
+        hero_hello: "Hi, I'm",
+        hero_sub: "Economy, Moderation, Fun and much more!",
+        hero_dashboard: "My Dashboard →", hero_start: "Get Started",
+        hero_features: "See Features ↓", hero_online: "Online now — 24/7",
+        stat_commands: "Commands", stat_users: "Users",
+        stat_koins: "Koins in Circulation", stat_uptime: "Uptime",
+        features_badge: "Features", features_title: "Everything you need",
+        features_sub: "The most complete and powerful bot for your Discord server",
+        feat_economy: "Full Economy",
+        feat_economy_desc: "Daily with progressive streak, work, mining, forge, interactive shop, ranking, profile and more!",
+        feat_casino: "Casino",
+        feat_casino_desc: "Roulette with buttons, Coinflip, Dice, Blackjack, Lottery and Gacha Cases!",
+        feat_pvp: "PvP & Adventure",
+        feat_pvp_desc: "Challenge players in duels, steal koins, commit crimes and heists!",
+        feat_savings: "Savings & Investments",
+        feat_savings_desc: "Deposit in the vault with interest, invest in crypto, stocks and real estate!",
+        feat_pets: "Pets & Challenges",
+        feat_pets_desc: "Adopt a pet, complete daily challenges and earn rewards!",
+        feat_fun: "Fun",
+        feat_fun_desc: "Truth or Dare with 120+ questions, Magic Ball, hug, kiss, ship, battle, jokes and memes!",
+        feat_mod: "Moderation & AutoMod",
+        feat_mod_desc: "Ban, kick, mute, warn, anti-spam, anti-links and automatic logs!",
+        feat_dashboard: "Web Dashboard",
+        feat_dashboard_desc: "Configure welcome, auto role, logs, XP, automod, economy and colors on the site! All in real time.",
+        how_badge: "How it Works", how_title: "Get started in 3 steps", how_sub: "Simple, fast and powerful",
+        how_step1_title: "Add the Bot", how_step1_desc: 'Click "Login with Discord" and authorize Klaus on your server. Takes 10 seconds!',
+        how_step2_title: "Configure Everything", how_step2_desc: "Access the Dashboard to enable welcome, auto role, logs, XP and more on the site!",
+        how_step3_title: "Enjoy the Bot", how_step3_desc: "Use /daily, /apostar, /minerar and dozens of commands. Earn koins, level up and compete!",
+        cmd_badge: "Commands", cmd_title: "94 Available Commands",
+        cmd_sub: "Use / to see all commands in Discord",
+        faq_badge: "Questions", faq_title: "Frequently Asked Questions",
+        faq_sub: "Get your questions answered about Klaus Bot",
+        cta_title: "Ready to get started?",
+        cta_sub: "Add Klaus to your server and transform the experience!",
+        cta_dashboard: "Open Dashboard →", cta_add: "Add to Discord",
+        footer_made: "Made with dedication for the Discord community",
+        footer_support: "Support", footer_terms: "Terms of Service", footer_privacy: "Privacy Policy"
+      }
+    };
+
+    let currentLang = localStorage.getItem('klaus_lang') || 'pt';
+
+    function applyLang(lang) {
+      currentLang = lang;
+      localStorage.setItem('klaus_lang', lang);
+      const dict = I18N[lang];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) el.textContent = dict[key];
+      });
+      document.getElementById('lang-flag').textContent = lang === 'pt' ? '🇧🇷' : '🇺🇸';
+      document.getElementById('lang-code').textContent = lang.toUpperCase();
+      document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+    }
+
+    function toggleLang() {
+      applyLang(currentLang === 'pt' ? 'en' : 'pt');
+    }
+
+    applyLang(currentLang);
+  </script>
 </body>
 </html>

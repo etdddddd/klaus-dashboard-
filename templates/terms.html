@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Termos de Serviço — Klaus Bot</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=32">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=33">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>">
+  <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('klaus_theme')||'dark')</script>
   <style>
     .legal-content{max-width:720px;margin:0 auto;line-height:1.8}
     .legal-content h3{font-size:1.1rem;color:var(--text);margin:2rem 0 .8rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
@@ -40,6 +41,7 @@
       <a href="/leaderboard" class="nav-link" data-i18n="nav_leaderboard">Leaderboard</a>
       <a href="/stats" class="nav-link" data-i18n="nav_stats">Estatísticas</a>
       <div class="lang-toggle" onclick="toggleLang()"><span id="lang-flag">🇧🇷</span><span id="lang-code">PT</span></div>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
       <a href="/dashboard" class="btn btn-primary btn-sm" data-i18n="nav_dashboard">Dashboard</a>
     </div>
   </nav>
@@ -104,6 +106,8 @@
     let currentLang=localStorage.getItem('klaus_lang')||'pt';
     function applyLang(lang){currentLang=lang;localStorage.setItem('klaus_lang',lang);const d=I18N[lang];document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(d[k])el.textContent=d[k]});document.getElementById('lang-flag').textContent=lang==='pt'?'🇧🇷':'🇺🇸';document.getElementById('lang-code').textContent=lang.toUpperCase();document.documentElement.lang=lang==='pt'?'pt-BR':'en'}
     function toggleLang(){applyLang(currentLang==='pt'?'en':'pt')}
+    function toggleTheme(){const h=document.documentElement;const n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);localStorage.setItem('klaus_theme',n);document.getElementById('themeToggle').textContent=n==='light'?'☀️':'🌙'}
+    document.getElementById('themeToggle').textContent=document.documentElement.getAttribute('data-theme')==='light'?'☀️':'🌙';
     applyLang(currentLang);
   </script>
 </body>

@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Klaus Bot — O Bot Mais Completo do Discord</title>
   <meta name="description" content="Klaus Bot: Economia, Moderação, Diversão, XP System e Dashboard Web. O bot mais completo para seu servidor Discord.">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=32">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=33">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>">
+  <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('klaus_theme')||'dark')</script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     .consent-overlay{position:fixed;inset:0;z-index:99999;background:rgba(5,3,11,0.88);backdrop-filter:blur(30px) saturate(200%);display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .5s var(--transition)}
@@ -98,6 +99,7 @@
         <span id="lang-flag">🇧🇷</span>
         <span id="lang-code">PT</span>
       </div>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
       {% if user %}
         <a href="/dashboard" class="btn btn-primary btn-sm" data-i18n="nav_dashboard">Dashboard</a>
         {% if user.id == '1230185414808047666' %}
@@ -1607,6 +1609,15 @@
     function toggleLang() {
       applyLang(currentLang === 'pt' ? 'en' : 'pt');
     }
+
+    function toggleTheme() {
+      const h = document.documentElement;
+      const n = h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      h.setAttribute('data-theme', n);
+      localStorage.setItem('klaus_theme', n);
+      document.getElementById('themeToggle').textContent = n === 'light' ? '☀️' : '🌙';
+    }
+    document.getElementById('themeToggle').textContent = document.documentElement.getAttribute('data-theme') === 'light' ? '☀️' : '🌙';
 
     applyLang(currentLang);
   </script>

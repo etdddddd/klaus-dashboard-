@@ -7,8 +7,9 @@ function init(id) {
     .then(r => r.json())
     .then(data => {
       const channels = data.channels || data;
+      const skipChannels = ['autorole_role', 'xprole_role', 'automod_punishment'];
       document.querySelectorAll('select').forEach(sel => {
-        if (sel.id === 'autorole_role') return;
+        if (skipChannels.includes(sel.id)) return;
         if (!channels || channels.length === 0) {
           const opt = document.createElement('option');
           opt.value = '';

@@ -634,11 +634,6 @@ def leaderboard_page() -> str:
     return render_template("leaderboard.html")
 
 
-@app.route("/stats")
-def stats_page() -> str:
-    return render_template("stats.html")
-
-
 PROFILE_BORDERS = {
     "default": {"name": "Padrao", "emoji": "\u2b1c", "price": 0, "color": "#d946ef"},
     "gold": {"name": "Dourado", "emoji": "\U0001f947", "price": 10000, "color": "#ffd700"},

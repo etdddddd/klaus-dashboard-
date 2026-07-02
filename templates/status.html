@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Status - Klaus Bot</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=33">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=34">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>">
   <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('klaus_theme')||'dark')</script>
   <style>
@@ -24,7 +24,7 @@
     .top-user-label{font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
     .top-user-info h3{font-size:1.15rem;font-weight:800;margin:.15rem 0}
     .top-user-koins{color:#ffd700;font-weight:700;font-size:.9rem;text-shadow:0 0 10px rgba(255,215,0,.2)}
-    .status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2.5rem}
+    .status-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2.5rem}
     .stat-card{background:rgba(10,7,20,.6);border:1px solid var(--card-border);border-radius:18px;padding:1.5rem 1rem;text-align:center;position:relative;overflow:hidden;transition:all .4s var(--transition);opacity:0;transform:translateY(20px);backdrop-filter:blur(30px)}
     .stat-card.visible{opacity:1;transform:translateY(0)}
     .stat-card::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .4s}
@@ -32,11 +32,11 @@
     .stat-card:hover{transform:translateY(-6px);border-color:var(--accent);box-shadow:0 15px 50px rgba(0,0,0,.3),0 0 30px color-mix(in srgb,var(--accent) 10%,transparent)}
     .stat-icon{font-size:2.2rem;margin-bottom:.5rem;transition:transform .3s}
     .stat-card:hover .stat-icon{transform:scale(1.15) rotate(-5deg)}
-    .stat-value{font-size:2.2rem;font-weight:900;color:white;line-height:1;margin-bottom:.3rem}
+    .stat-value{font-size:2.2rem;font-weight:900;color:white;line-height:1;margin-bottom:.3rem;font-variant-numeric:tabular-nums}
     .stat-label{font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.8rem;font-weight:600}
     .stat-bar{width:100%;height:4px;background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden}
     .stat-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 60%,white));border-radius:4px;width:0%;transition:width 1.8s cubic-bezier(.22,1,.36,1)}
-    .services-section{margin-bottom:2rem}
+    .services-section{margin-bottom:2.5rem}
     .services-card{padding:0;overflow:hidden}
     .service-row{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--border);transition:all .25s}
     .service-row:last-child{border-bottom:none}
@@ -47,7 +47,25 @@
     @keyframes pulse-dot{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{opacity:.7;box-shadow:0 0 0 6px rgba(34,197,94,0)}}
     .service-info h4{font-size:.9rem;margin:0}
     .service-info p{color:var(--text3);font-size:.78rem;margin:0}
-    @media(max-width:480px){.status-grid{grid-template-columns:repeat(2,1fr);gap:.8rem}.stat-card{padding:1rem .8rem}.stat-value{font-size:1.6rem}.status-hero-title{font-size:1.6rem}.top-user-inner{padding:.8rem 1rem}.top-user-avatar{width:52px;height:52px}}
+    .leader-section{margin-bottom:2rem}
+    .leader-section h2{font-size:1.3rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+    .leader-card{background:rgba(10,7,20,.6);border:1px solid var(--card-border);border-radius:18px;padding:0;overflow:hidden;backdrop-filter:blur(30px)}
+    .leader-row{display:flex;align-items:center;padding:.85rem 1.5rem;border-bottom:1px solid var(--border);transition:all .25s}
+    .leader-row:last-child{border-bottom:none}
+    .leader-row:hover{background:rgba(139,92,246,.04)}
+    .leader-rank{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;flex-shrink:0}
+    .leader-rank.gold{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000}
+    .leader-rank.silver{background:linear-gradient(135deg,#d1d5db,#9ca3af);color:#000}
+    .leader-rank.bronze{background:linear-gradient(135deg,#f97316,#ea580c);color:#fff}
+    .leader-rank.normal{background:rgba(255,255,255,.08);color:var(--text3)}
+    .leader-name{flex:1;margin-left:.75rem;font-weight:600;color:var(--text)}
+    .leader-value{font-weight:800;color:var(--primary);font-variant-numeric:tabular-nums;font-size:.9rem}
+    .leader-bar{height:4px;background:rgba(255,255,255,.04);margin:0 1.5rem .5rem;border-radius:2px;overflow:hidden}
+    .leader-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--primary),var(--pink));transition:width 1.5s ease}
+    .leader-empty{text-align:center;padding:2rem;color:var(--text3);font-size:.9rem}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    @media(max-width:900px){.status-grid{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}}
+    @media(max-width:480px){.status-grid{grid-template-columns:1fr 1fr;gap:.8rem}.stat-card{padding:1rem .8rem}.stat-value{font-size:1.6rem}.status-hero-title{font-size:1.6rem}.top-user-inner{padding:.8rem 1rem}.top-user-avatar{width:52px;height:52px}}
   </style>
 </head>
 <body>
@@ -71,7 +89,6 @@
       <a href="/" class="nav-link" data-i18n="nav_home">Home</a>
       <a href="/status" class="nav-link" data-i18n="nav_status">Status</a>
       <a href="/leaderboard" class="nav-link" data-i18n="nav_leaderboard">Leaderboard</a>
-      <a href="/stats" class="nav-link" data-i18n="nav_stats">Estatísticas</a>
       <a href="/profile" class="nav-link" data-i18n="nav_profile">Perfil</a>
       <div class="lang-toggle" onclick="toggleLang()"><span id="lang-flag">🇧🇷</span><span id="lang-code">PT</span></div>
       <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
@@ -92,7 +109,7 @@
       <div class="top-user-inner">
         <img id="top-avatar" src="" alt="" class="top-user-avatar">
         <div class="top-user-info">
-          <span class="top-user-label" data-i18n="status_richest">👑 Mais Rico</span>
+          <span class="top-user-label" data-i18n="status_richest">Mais Rico</span>
           <h3 id="top-user-name">--</h3>
           <p id="top-user-koins" class="top-user-koins">0 Koins</p>
         </div>
@@ -101,19 +118,40 @@
     </div>
 
     <div class="status-grid">
-      <div class="stat-card" style="--accent:#8b5cf6"><div class="stat-icon">👥</div><div class="stat-value" id="stat-users">--</div><div class="stat-label" data-i18n="status_users">Usuários</div><div class="stat-bar"><div class="stat-bar-fill" id="bar-users"></div></div></div>
+      <div class="stat-card" style="--accent:#8b5cf6"><div class="stat-icon">👥</div><div class="stat-value" id="stat-users">--</div><div class="stat-label" data-i18n="status_users">Usuarios</div><div class="stat-bar"><div class="stat-bar-fill" id="bar-users"></div></div></div>
       <div class="stat-card" style="--accent:#3b82f6"><div class="stat-icon">🏠</div><div class="stat-value" id="stat-guilds">--</div><div class="stat-label" data-i18n="status_guilds">Servidores</div><div class="stat-bar"><div class="stat-bar-fill" id="bar-guilds"></div></div></div>
       <div class="stat-card" style="--accent:#f59e0b"><div class="stat-icon">💰</div><div class="stat-value" id="stat-koins">--</div><div class="stat-label" data-i18n="status_koins">Koins Totais</div><div class="stat-bar"><div class="stat-bar-fill" id="bar-koins"></div></div></div>
       <div class="stat-card" style="--accent:#22c55e"><div class="stat-icon">⚡</div><div class="stat-value" id="stat-commands">--</div><div class="stat-label" data-i18n="status_commands">Comandos Usados</div><div class="stat-bar"><div class="stat-bar-fill" id="bar-commands"></div></div></div>
       <div class="stat-card" style="--accent:#d946ef"><div class="stat-icon">🏆</div><div class="stat-value" id="stat-achievements">--</div><div class="stat-label" data-i18n="status_achievements">Conquistas</div><div class="stat-bar"><div class="stat-bar-fill" id="bar-achievements"></div></div></div>
-      <div class="stat-card" style="--accent:#06b6d4"><div class="stat-icon">🤖</div><div class="stat-value" id="stat-version">2.0</div><div class="stat-label" data-i18n="status_version">Versão</div><div class="stat-bar"><div class="stat-bar-fill" style="width:100%"></div></div></div>
+      <div class="stat-card" style="--accent:#06b6d4"><div class="stat-icon">👑</div><div class="stat-value" id="stat-premium">--</div><div class="stat-label" data-i18n="status_premium">Premium</div><div class="stat-bar"><div class="stat-bar-fill" style="width:100%"></div></div></div>
+      <div class="stat-card" style="--accent:#f97316"><div class="stat-icon">⛏️</div><div class="stat-value" id="stat-mines">--</div><div class="stat-label" data-i18n="status_mines">Mineracoes</div><div class="stat-bar"><div class="stat-bar-fill" id="bar-mines"></div></div></div>
+      <div class="stat-card" style="--accent:#06b6d4"><div class="stat-icon">🎰</div><div class="stat-value" id="stat-casino">--</div><div class="stat-label" data-i18n="status_casino">Apostas</div><div class="stat-bar"><div class="stat-bar-fill" id="bar-casino"></div></div></div>
+      <div class="stat-card" style="--accent:#ef4444"><div class="stat-icon">🕵️</div><div class="stat-value" id="stat-crimes">--</div><div class="stat-label" data-i18n="status_crimes">Crimes</div><div class="stat-bar"><div class="stat-bar-fill" id="bar-crimes"></div></div></div>
+      <div class="stat-card" style="--accent:#22c55e"><div class="stat-icon">💼</div><div class="stat-value" id="stat-works">--</div><div class="stat-label" data-i18n="status_works">Trabalhos</div><div class="stat-bar"><div class="stat-bar-fill" id="bar-works"></div></div></div>
+      <div class="stat-card" style="--accent:#06b6d4"><div class="stat-icon">🤖</div><div class="stat-value" id="stat-version">2.0</div><div class="stat-label" data-i18n="status_version">Versao</div><div class="stat-bar"><div class="stat-bar-fill" style="width:100%"></div></div></div>
+    </div>
+
+    <div class="two-col">
+      <div class="leader-section">
+        <h2 data-i18n="status_top_rich">Top 5 Mais Ricos</h2>
+        <div class="leader-card" id="topRich"><div class="leader-empty" data-i18n="status_loading">Carregando...</div></div>
+      </div>
+      <div class="leader-section">
+        <h2 data-i18n="status_top_streaks">Maiores Sequencias</h2>
+        <div class="leader-card" id="topStreaks"><div class="leader-empty" data-i18n="status_loading">Carregando...</div></div>
+      </div>
+    </div>
+
+    <div class="leader-section">
+      <h2 data-i18n="status_top_achievements">Mais Conquistas</h2>
+      <div class="leader-card" id="topAchievements"><div class="leader-empty" data-i18n="status_loading">Carregando...</div></div>
     </div>
 
     <div class="services-section">
-      <h2 class="section-title" data-i18n="status_services">Serviços</h2>
+      <h2 class="section-title" data-i18n="status_services">Servicos</h2>
       <div class="services-card card">
         <div class="service-row"><div class="service-info"><span class="service-dot service-online"></span><div><h4 data-i18n="svc_bot">Bot Discord</h4><p>Slash commands · 94 comandos</p></div></div><span class="badge badge-green" data-i18n="svc_operational">Operacional</span></div>
-        <div class="service-row"><div class="service-info"><span class="service-dot service-online"></span><div><h4 data-i18n="svc_dashboard">Dashboard</h4><p data-i18n="svc_dashboard_desc">Painel de configuração web</p></div></div><span class="badge badge-green" data-i18n="svc_operational">Operacional</span></div>
+        <div class="service-row"><div class="service-info"><span class="service-dot service-online"></span><div><h4 data-i18n="svc_dashboard">Dashboard</h4><p data-i18n="svc_dashboard_desc">Painel de configuracao web</p></div></div><span class="badge badge-green" data-i18n="svc_operational">Operacional</span></div>
         <div class="service-row"><div class="service-info"><span class="service-dot service-online"></span><div><h4>API / MongoDB</h4><p data-i18n="svc_api_desc">Banco de dados e endpoints</p></div></div><span class="badge badge-green" data-i18n="svc_operational">Operacional</span></div>
         <div class="service-row"><div class="service-info"><span class="service-dot service-online"></span><div><h4 data-i18n="svc_economy">Economia</h4><p data-i18n="svc_economy_desc">Sistema financeiro e cassino</p></div></div><span class="badge badge-green" data-i18n="svc_operational">Operacional</span></div>
       </div>
@@ -128,8 +166,8 @@
         <a href="/" data-i18n="nav_home">Home</a>
         <a href="/status">Status</a>
         <a href="/leaderboard">Leaderboard</a>
-        <a href="/terms" data-i18n="footer_terms">Termos de Serviço</a>
-        <a href="/privacy" data-i18n="footer_privacy">Privacidade</a>
+        <a href="/terms" data-i18n="footer_terms">Termos de Servico</a>
+        <a href="/privacy" data-i18n="footer_privacidade">Privacidade</a>
       </div>
     </div>
   </footer>
@@ -138,13 +176,14 @@
     const cursorGlow=document.getElementById('cursor-glow');let mouseX=0,glowX=0,glowY=0;document.addEventListener('mousemove',e=>{mouseX=e.clientX;glowY=e.clientY});function animateGlow(){glowX+=(mouseX-glowX)*.08;glowY+=(glowY-glowY)*.08;cursorGlow.style.left=glowX+'px';cursorGlow.style.top=glowY+'px';requestAnimationFrame(animateGlow)}if(window.innerWidth>768)animateGlow();
     const sp=document.getElementById('scroll-progress');window.addEventListener('scroll',()=>{const t=document.documentElement.scrollTop,h=document.documentElement.scrollHeight-document.documentElement.clientHeight;sp.style.transform=`scaleX(${h>0?t/h:0})`});
 
-    (function(){const c=document.getElementById('particles-canvas'),x=c.getContext('2d');let p=[],s=[],w,h;function resize(){w=c.width=window.innerWidth;h=c.height=window.innerHeight}resize();window.addEventListener('resize',resize);const cols=[[139,92,246],[217,70,239],[59,130,246],[244,63,94],[167,139,250]];class P{constructor(){this.x=Math.random()*w;this.y=Math.random()*h;this.vx=(Math.random()-.5)*.25;this.vy=(Math.random()-.5)*.25;this.r=Math.random()*2.5+.3;this.a=Math.random()*.35+.04;this.p=Math.random()*Math.PI*2;this.ps=Math.random()*.018+.005;this.c=cols[~~(Math.random()*cols.length)]}update(){this.x+=this.vx;this.y+=this.vy;this.p+=this.ps;if(this.x<0||this.x>w)this.vx*=-1;if(this.y<0||this.y>h)this.vy*=-1}draw(){const a=this.a+Math.sin(this.p)*.12;x.beginPath();x.arc(this.x,this.y,this.r,0,Math.PI*2);x.fillStyle=`rgba(${this.c[0]},${this.c[1]},${this.c[2]},${a})`;x.fill();x.beginPath();x.arc(this.x,this.y,this.r*3.5,0,Math.PI*2);x.fillStyle=`rgba(${this.c[0]},${this.c[1]},${this.c[2]},${a*.06})`;x.fill()}}class S{constructor(){this.reset()}reset(){this.x=Math.random()*w;this.y=Math.random()*h*.5;this.l=Math.random()*100+50;this.sp=Math.random()*7+4;this.ang=Math.PI/4+(Math.random()-.5)*.3;this.a=1;this.d=Math.random()*.02+.01;this.c=cols[~~(Math.random()*cols.length)]}update(){this.x+=Math.cos(this.ang)*this.sp;this.y+=Math.sin(this.ang)*this.sp;this.a-=this.d;if(this.a<=0)this.reset()}draw(){const tx=this.x-Math.cos(this.ang)*this.l,ty=this.y-Math.sin(this.ang)*this.l,g=x.createLinearGradient(tx,ty,this.x,this.y);g.addColorStop(0,`rgba(${this.c[0]},${this.c[1]},${this.c[2]},0)`);g.addColorStop(1,`rgba(${this.c[0]},${this.c[1]},${this.c[2]},${this.a*.7})`);x.beginPath();x.moveTo(tx,ty);x.lineTo(this.x,this.y);x.strokeStyle=g;x.lineWidth=1.8;x.stroke();x.beginPath();x.arc(this.x,this.y,2.5,0,Math.PI*2);x.fillStyle=`rgba(255,255,255,${this.a*.9})`;x.fill()}}const mob=window.innerWidth<768;for(let i=0;i<(mob?25:100);i++)p.push(new P);for(let i=0;i<(mob?1:4);i++)s.push(new S);let ls=0;function anim(t){x.clearRect(0,0,w,h);if(t-ls>3500+Math.random()*5000){s.push(new S);ls=t;if(s.length>7)s.shift()}s.forEach(v=>{v.update();v.draw()});p.forEach(v=>{v.update();v.draw()});if(!mob)for(let i=0;i<p.length;i++)for(let j=i+1;j<p.length;j++){const dx=p[i].x-p[j].x,dy=p[i].y-p[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<130){x.beginPath();x.moveTo(p[i].x,p[i].y);x.lineTo(p[j].x,p[j].y);x.strokeStyle=`rgba(139,92,246,${.04*(1-d/130)})`;x.lineWidth=.5;x.stroke()}}requestAnimationFrame(anim)}requestAnimationFrame(anim)})();
+    (function(){const c=document.getElementById('particles-canvas'),x=c.getContext('2d');let p=[],s=[],w,h;function resize(){w=c.width=window.innerWidth;h=c.height=window.innerHeight}resize();window.addEventListener('resize',resize);const cols=[[139,92,246],[217,70,239],[59,130,246],[244,63,94],[167,139,250]];class P{constructor(){this.x=Math.random()*w;this.y=Math.random()*h;this.vx=(Math.random()-.5)*.25;this.vy=(Math.random()-.5)*.25;this.r=Math.random()*2.5+.3;this.a=Math.random()*.35+.04;this.p=Math.random()*Math.PI*2;this.ps=Math.random()*.018+.005;this.c=cols[~~(Math.random()*cols.length)]}update(){this.x+=this.vx;this.y+=this.vy;this.p+=this.ps;if(this.x<0||this.x>w)this.vx*=-1;if(this.y<0||this.y>h)this.vy*=-1}draw(){const a=this.a+Math.sin(this.p)*.12;x.beginPath();x.arc(this.x,this.y,this.r,0,Math.PI*2);x.fillStyle=`rgba(${this.c[0]},${this.c[1]},${this.c[2]},${a})`;x.fill();x.beginPath();x.arc(this.x,this.y,this.r*3.5,0,Math.PI*2);x.fillStyle=`rgba(${this.c[0]},${this.c[1]},${this.c[2]},${a*.06})`;x.fill()}}class S{constructor(){this.reset()}reset(){this.x=Math.random()*w;this.y=Math.random()*h*.5;this.l=Math.random()*100+50;this.sp=Math.random()*7+4;this.ang=Math.PI/4+(Math.random()-.5)*.3;this.a=1;this.d=Math.random()*.02+.01;this.c=cols[~~(Math.random()*cols.length)]}update(){this.x+=Math.cos(this.ang)*this.sp;this.y+=Math.sin(this.ang)*this.sp;this.a-=this.d;if(this.a<=0)this.reset()}draw(){const tx=this.x-Math.cos(this.ang)*this.l,ty=this.y-Math.sin(this.ang)*this.l,g=x.createLinearGradient(tx,ty,this.x,this.y);g.addColorStop(0,`rgba(${this.c[0]},${this.c[1]},${this.c[2]},0)`);g.addColorStop(1,`rgba(${this.c[0]},${this.c[1]},${this.c[2]},${this.a*.7})`);x.beginPath();x.moveTo(tx,ty);x.lineTo(this.x,this.y);x.strokeStyle=g;x.lineWidth=1.8;x.stroke();x.beginPath();x.arc(this.x,this.y,2.5,0,Math.PI*2);x.fillStyle=`rgba(255,255,255,${this.a*.9})`;x.fill()}}const mob=window.innerWidth<768;for(let i=0;i<(mob?25:100);i++)p.push(new P);for(let i=0;i<(mob?1:4);i++)s.push(new S);function loop(){x.clearRect(0,0,w,h);for(const pp of p){pp.update();pp.draw()}for(const ss of s){ss.update();ss.draw()}requestAnimationFrame(loop)}loop()})();
 
     window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',window.scrollY>50)});
-    document.querySelectorAll('.stat-card').forEach((c,i)=>{setTimeout(()=>c.classList.add('visible'),200+i*100)});
+    document.querySelectorAll('.stat-card').forEach((c,i)=>{setTimeout(()=>c.classList.add('visible'),200+i*80)});
 
     function formatKoins(n){if(n>=1e18)return(n/1e18).toFixed(1)+'Qi';if(n>=1e15)return(n/1e15).toFixed(1)+'Q';if(n>=1e12)return(n/1e12).toFixed(1)+'T';if(n>=1e9)return(n/1e9).toFixed(1)+'B';if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return n.toLocaleString('pt-BR')}
-    function animateValue(el,target){let c=0;const step=Math.max(1,Math.ceil(target/50)),iv=setInterval(()=>{c+=step;if(c>=target){c=target;clearInterval(iv)}el.textContent=c.toLocaleString('pt-BR')},25)}
+    function fmt(n){if(n==null||isNaN(n))return'0';return formatKoins(n)}
+    function animateValue(el,target){if(!target){el.textContent='0';return}let c=0;const step=Math.max(1,Math.ceil(target/50)),iv=setInterval(()=>{c+=step;if(c>=target){c=target;clearInterval(iv)}el.textContent=fmt(c)},25)}
 
     fetch('/api/bot_status').then(r=>r.json()).then(d=>{
       const he=document.getElementById('hero-emoji'),ht=document.getElementById('hero-title'),hs=document.getElementById('hero-sub'),hi=document.getElementById('hero-icon');
@@ -156,8 +195,31 @@
       if(d.top_user_id&&d.top_user_id!=='N/A'){const card=document.getElementById('top-user-card');card.style.display='block';card.style.animation='fadeInUp .5s ease .3s both';document.getElementById('top-avatar').src=d.top_user_avatar||'https://cdn.discordapp.com/embed/avatars/0.png';document.getElementById('top-user-name').textContent=d.top_user_name||'User';document.getElementById('top-user-koins').textContent=formatKoins(d.top_user_koins||0)+' Koins'}
     }).catch(()=>{document.getElementById('hero-emoji').textContent='⚠️';document.getElementById('hero-title').textContent='Erro ao Conectar';document.getElementById('hero-title').style.color='#f87171'});
 
-    const I18N={pt:{nav_home:"Home",nav_status:"Status",nav_leaderboard:"Leaderboard",nav_stats:"Estatísticas",nav_profile:"Perfil",nav_dashboard:"Dashboard",status_checking:"Verificando...",status_connecting:"Conectando ao servidor",status_richest:"👑 Mais Rico",status_users:"Usuários",status_guilds:"Servidores",status_koins:"Koins Totais",status_commands:"Comandos Usados",status_achievements:"Conquistas",status_version:"Versão",status_services:"Serviços",svc_bot:"Bot Discord",svc_operational:"Operacional",svc_dashboard:"Dashboard",svc_dashboard_desc:"Painel de configuração web",svc_api_desc:"Banco de dados e endpoints",svc_economy:"Economia",svc_economy_desc:"Sistema financeiro e cassino",footer_made:"Feito com 💜 por kadu",footer_terms:"Termos de Serviço",footer_privacy:"Privacidade"},en:{nav_home:"Home",nav_status:"Status",nav_leaderboard:"Leaderboard",nav_stats:"Statistics",nav_profile:"Profile",nav_dashboard:"Dashboard",status_checking:"Checking...",status_connecting:"Connecting to server",status_richest:"👑 Richest",status_users:"Users",status_guilds:"Servers",status_koins:"Total Koins",status_commands:"Commands Used",status_achievements:"Achievements",status_version:"Version",status_services:"Services",svc_bot:"Discord Bot",svc_operational:"Operational",svc_dashboard:"Dashboard",svc_dashboard_desc:"Web configuration panel",svc_api_desc:"Database and endpoints",svc_economy:"Economy",svc_economy_desc:"Financial system and casino",footer_made:"Made with 💜 by kadu",footer_terms:"Terms of Service",footer_privacy:"Privacy Policy"}};
+    function renderLeader(container,items,valueKey,suffix){
+      if(!items||items.length===0){container.innerHTML='<div class="leader-empty">'+t('status_no_data')+'</div>';return}
+      const max=items[0][valueKey]||1;const medals=['gold','silver','bronze','normal','normal'];
+      container.innerHTML=items.map((u,i)=>{
+        const pct=Math.min(((u[valueKey]||0)/max)*100,100);
+        return '<div class="leader-row"><div class="leader-rank '+medals[i]+'">'+(i+1)+'</div><div class="leader-name">'+(u.username||'Unknown')+'</div><div class="leader-value">'+fmt(u[valueKey])+' '+suffix+'</div></div><div class="leader-bar"><div class="leader-bar-fill" style="width:'+pct+'%"></div></div>';
+      }).join('');
+    }
+
+    fetch('/api/stats/detailed').then(r=>r.json()).then(d=>{
+      console.log('Stats:',d);
+      animateValue(document.getElementById('stat-premium'),d.premium_users||0);
+      animateValue(document.getElementById('stat-mines'),d.total_mines||0);
+      animateValue(document.getElementById('stat-casino'),d.total_casino||0);
+      animateValue(document.getElementById('stat-crimes'),d.total_crimes||0);
+      animateValue(document.getElementById('stat-works'),d.total_works||0);
+      setTimeout(()=>{document.getElementById('bar-mines').style.width=Math.min(100,(d.total_mines||0)/5)+'%';document.getElementById('bar-casino').style.width=Math.min(100,(d.total_casino||0)/5)+'%';document.getElementById('bar-crimes').style.width=Math.min(100,(d.total_crimes||0)/5)+'%';document.getElementById('bar-works').style.width=Math.min(100,(d.total_works||0)/5)+'%'},400);
+      renderLeader(document.getElementById('topRich'),d.top_rich,'koins',t('status_koins'));
+      renderLeader(document.getElementById('topStreaks'),d.top_streaks,'streak',t('status_streak'));
+      renderLeader(document.getElementById('topAchievements'),d.top_achievements,'count',t('status_ach_count'));
+    }).catch(e=>console.error('Stats error:',e));
+
+    const I18N={pt:{nav_home:"Home",nav_status:"Status",nav_leaderboard:"Leaderboard",nav_profile:"Perfil",nav_dashboard:"Dashboard",status_checking:"Verificando...",status_connecting:"Conectando ao servidor",status_richest:"Mais Rico",status_users:"Usuarios",status_guilds:"Servidores",status_koins:"Koins Totais",status_commands:"Comandos Usados",status_achievements:"Conquistas",status_version:"Versao",status_premium:"Premium",status_mines:"Mineracoes",status_casino:"Apostas",status_crimes:"Crimes",status_works:"Trabalhos",status_services:"Servicos",status_top_rich:"Top 5 Mais Ricos",status_top_streaks:"Maiores Sequencias",status_top_achievements:"Mais Conquistas",status_loading:"Carregando...",status_no_data:"Sem dados ainda",status_koins:"koins",status_streak:"dias",status_ach_count:"conquistas",svc_bot:"Bot Discord",svc_operational:"Operacional",svc_dashboard:"Dashboard",svc_dashboard_desc:"Painel de configuracao web",svc_api_desc:"Banco de dados e endpoints",svc_economy:"Economia",svc_economy_desc:"Sistema financeiro e cassino",footer_made:"Feito com 💜 por kadu",footer_terms:"Termos de Servico",footer_privacidade:"Privacidade"},en:{nav_home:"Home",nav_status:"Status",nav_leaderboard:"Leaderboard",nav_profile:"Profile",nav_dashboard:"Dashboard",status_checking:"Checking...",status_connecting:"Connecting to server",status_richest:"Richest",status_users:"Users",status_guilds:"Servers",status_koins:"Total Koins",status_commands:"Commands Used",status_achievements:"Achievements",status_version:"Version",status_premium:"Premium",status_mines:"Mines",status_casino:"Bets",status_crimes:"Crimes",status_works:"Jobs",status_services:"Services",status_top_rich:"Top 5 Richest",status_top_streaks:"Longest Streaks",status_top_achievements:"Most Achievements",status_loading:"Loading...",status_no_data:"No data yet",status_koins:"koins",status_streak:"days",status_ach_count:"achievements",svc_bot:"Discord Bot",svc_operational:"Operational",svc_dashboard:"Dashboard",svc_dashboard_desc:"Web configuration panel",svc_api_desc:"Database and endpoints",svc_economy:"Economy",svc_economy_desc:"Financial system and casino",footer_made:"Made with 💜 by kadu",footer_terms:"Terms of Service",footer_privacidade:"Privacy Policy"}};
     let currentLang=localStorage.getItem('klaus_lang')||'pt';
+    function t(key){return(I18N[currentLang]&&I18N[currentLang][key])||key}
     function applyLang(lang){currentLang=lang;localStorage.setItem('klaus_lang',lang);const d=I18N[lang];document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(d[k])el.textContent=d[k]});document.getElementById('lang-flag').textContent=lang==='pt'?'🇧🇷':'🇺🇸';document.getElementById('lang-code').textContent=lang.toUpperCase();document.documentElement.lang=lang==='pt'?'pt-BR':'en'}
     function toggleLang(){applyLang(currentLang==='pt'?'en':'pt')}
     function toggleTheme(){const h=document.documentElement;const n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);localStorage.setItem('klaus_theme',n);document.getElementById('themeToggle').textContent=n==='light'?'☀️':'🌙'}
